@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package o5.dempe.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/pentops/o5-go/dempe/v1/dempe_pb";
+
+
+message DeadMessage {
+
+  // The message ID used by the underlying messaging infra, can be any format
+  string message_id = 1;
+
+  string queue_name = 2;
+  string grpc_name = 3;
+
+  google.protobuf.Timestamp rejected_timestamp = 4;
+  google.protobuf.Timestamp initial_sent_timestamp = 5;
+
+  Any payload = 6;
+
+
+
+  oneof problem {
+    InvariantViolation invariant_violation = 10;
+    UnhandledError unhandled_error = 11;
+  }
+}
+
+enum Urgency {
+  URGENCY_UNSPECIFIED = 0;
+  URGENCY_LOW = 1;
+  URGENCY_MEDIUM = 2;
+  URGENCY_HIGH = 3;
+}
+
+message InvariantViolation {
+  string description = 1;
+  Any error = 2;
+  Urgency urgency = 3;
+}
+
+message UnhandledError {
+  string error = 1;
+}
+
+// Any wraps the well-known any, but encodes messages as JSON in addition
+message Any {
+  google.protobuf.Any proto = 1;
+  string json = 2;
+}

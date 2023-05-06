@@ -1,0 +1,137 @@
+syntax = "proto3";
+
+package o5.application.v1;
+
+import "validate/validate.proto";
+
+option go_package = "github.com/pentops/o5-go/application/v1/application_pb";
+
+message Application {
+  string name = 1 [
+    (validate.rules).string.pattern = "^[a-z][a-z0-9]+$"
+  ];
+
+  repeated string sub_environments = 2;
+
+  repeated Subscription subscriptions = 3;
+  repeated Target targets = 4;
+  repeated Ingress ingress = 5;
+
+  repeated Blobstore blobstores = 6;
+  repeated Database databases = 7;
+  repeated Runtime runtimes = 8;
+
+}
+
+// Ingress configures inbound request traffic to the application
+message Ingress {
+  string name = 1 [
+    (validate.rules).string.pattern = "^[a-z][a-z0-9]+$"
+  ];
+  repeated HTTPRoute http_routes = 2;
+  repeated GRPCRoute grpc_routes = 3;
+}
+
+message HTTPRoute {
+  string prefix = 1;
+  string target_runtime = 2;
+}
+
+message GRPCRoute {
+  string prefix = 1;
+  string target_runtime = 2;
+}
+
+enum Topology {
+  TOPOLOGY_UNSPECIFIED = 0;
+  TOPOLOGY_BROADCAST = 1;
+  TOPOLOGY_UNICAST = 2;
+  TOPOLOGY_REPLY = 3;
+}
+
+message Subscription {
+  string name = 1;
+  Topology topology = 2;
+}
+
+message Target {
+  string name = 1;
+  Topology topology = 2;
+}
+
+message Blobstore {
+  string name = 1;
+}
+
+message Database  {
+  string name = 1;
+
+  oneof engine {
+    Postgres postgres = 10;
+  }
+
+  message Postgres {
+
+    // The name of the database within the postgres instance, default is the
+    // name in the parent message
+    string db_name = 1;
+
+    // default is 'default' - identifies which database server from the
+    // environment config this belongs with
+    string server_group = 2;
+
+  }
+}
+
+message Runtime {
+  string name = 1 [
+    (validate.rules).string.pattern = "^[a-z][a-z0-9]+$"
+  ];
+
+  repeated Container containers = 3;
+}
+
+enum Demand {
+  DEMAND_UNSPECIFIED = 0;
+  DEMAND_LIGHT = 1;
+  DEMAND_MEDIUM = 2;
+  DEMAND_HEAVY = 3;
+}
+
+message Container {
+  string name = 1;
+
+  oneof source {
+    string image_url = 2;
+    Image image = 3;
+  }
+
+  message Image {
+    string name = 1;
+    string tag = 2;
+  }
+
+  // The amount of Memory and CPU to allocate to the container
+  Demand demand = 4;
+
+  repeated EnvironmentVariable env_vars = 5;
+}
+
+message EnvironmentVariable {
+  string name = 1;
+
+  oneof spec {
+    DatabaseEnvVar database = 10;
+    BlobstoreEnvVar blobstore = 11;
+    MapEnvVar env_map = 12;
+    FromEnvVar from_env = 13;
+  }
+}
+
+message DatabaseEnvVar {}
+
+message BlobstoreEnvVar {}
+
+message MapEnvVar {}
+
+message FromEnvVar {}
