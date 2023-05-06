@@ -1,2 +1,2 @@
-# o5pb
+# o5-pb
 Proto definitions for O5
