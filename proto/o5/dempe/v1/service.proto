@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+import "o5/dempe/v1/dead_message.proto";
+import "o5/auth/v1/actor.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/wrappers.proto";
+import "validate/validate.proto";
+
+package o5.dempe.v1;
+
+option go_package = "github.com/pentops/o5-go/dempe/v1/dempe_pb";
+
+service DempeService {
+  rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse) {
+    option (google.api.http) = {
+      get: "/dempe/v1/messages"
+    };
+  }
+
+  rpc GetMessage(GetMessageRequest) returns (GetMessageResponse) {}
+
+  rpc MessageAction(MessageActionRequest) returns (MessageActionResponse) {}
+}
+
+message ListMessagesRequest {
+  // TODO: Filters
+  // TODO: Paging
+}
+
+message ListMessagesResponse {
+  repeated CapturedMessage messages = 1;
+  // TODO: Paging
+}
+
+message GetMessageRequest {
+
+  // when not set, returns the next unhandled message
+  google.protobuf.StringValue message_id = 1 [
+    (validate.rules).string.uuid = true
+  ];
+
+}
+
+message CapturedMessage {
+  DeadMessage cause = 1;
+
+}
+
+message GetMessageResponse {
+  CapturedMessage message = 1;
+  repeated MessageAction actions = 2;
+}
+
+message MessageAction {
+
+  string note = 2;
+
+  o5.auth.v1.Actor actor = 3;
+
+  google.protobuf.Timestamp timestamp = 4;
+
+  oneof action {
+    // optional
+    ActionDelete delete = 10;
+    ActionRequeue requeue = 11;
+    ActionEdit edit = 12;
+
+    // Shelve?
+  }
+
+}
+
+message MessageActionRequest {
+  string message_id = 1;
+  MessageAction action = 2;
+
+}
+
+message ActionDelete {}
+
+message ActionRequeue {}
+
+message ActionEdit {
+  bytes new_message_json = 1;
+}
+
+message MessageActionResponse {}
