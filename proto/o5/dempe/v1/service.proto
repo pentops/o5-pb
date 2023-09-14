@@ -64,6 +64,9 @@ message GetMessageResponse {
 }
 
 message MessageAction {
+  string id = 1 [
+    (validate.rules).string.uuid = true
+  ];
 
   string note = 2;
 
@@ -83,7 +86,9 @@ message MessageAction {
 }
 
 message MessageActionRequest {
-  string message_id = 1;
+  string message_id = 1 [
+    (validate.rules).string.uuid = true
+  ];
   string note = 2;
 
   oneof action {
@@ -104,7 +109,9 @@ message ActionEdit {
 message MessageActionResponse {}
 
 message BatchMessageActionRequest {
-  repeated string message_ids = 1;
+  repeated string message_ids = 1 [
+    (validate.rules).string.uuid = true
+  ];
   string note = 2;
 
   oneof action {
