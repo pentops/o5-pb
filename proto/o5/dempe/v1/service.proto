@@ -20,7 +20,19 @@ service DempeService {
 
   rpc GetMessage(GetMessageRequest) returns (GetMessageResponse) {}
 
-  rpc MessageAction(MessageActionRequest) returns (MessageActionResponse) {}
+  rpc MessageAction(MessageActionRequest) returns (MessageActionResponse) {
+    option (google.api.http) = {
+      post: "/dempe/v1/messages/{message_id}/action"
+      body: "*"
+    };
+  }
+
+  rpc BatchMessageAction(BatchMessageActionRequest) returns (BatchMessageActionResponse) {
+    option (google.api.http) = {
+      post: "/dempe/v1/batch_messages/action"
+      body: "*"
+    };
+  }
 }
 
 message ListMessagesRequest {
@@ -44,7 +56,6 @@ message GetMessageRequest {
 
 message CapturedMessage {
   DeadMessage cause = 1;
-
 }
 
 message GetMessageResponse {
@@ -73,8 +84,13 @@ message MessageAction {
 
 message MessageActionRequest {
   string message_id = 1;
-  MessageAction action = 2;
+  string note = 2;
 
+  oneof action {
+    ActionDelete delete = 10;
+    ActionRequeue requeue = 11;
+    ActionEdit edit = 12;
+  }
 }
 
 message ActionDelete {}
@@ -86,3 +102,15 @@ message ActionEdit {
 }
 
 message MessageActionResponse {}
+
+message BatchMessageActionRequest {
+  repeated string message_ids = 1;
+  string note = 2;
+
+  oneof action {
+    ActionDelete delete = 10;
+    ActionRequeue requeue = 11;
+  }
+}
+
+message BatchMessageActionResponse {}
