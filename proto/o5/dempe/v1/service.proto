@@ -65,7 +65,7 @@ message GetMessageResponse {
 
 message MessageAction {
   string id = 1 [
-    (validate.rules).string.uuid = true
+    (buf.validate.field).string.uuid = true
   ];
 
   string note = 2;
@@ -87,7 +87,7 @@ message MessageAction {
 
 message MessageActionRequest {
   string message_id = 1 [
-    (validate.rules).string.uuid = true
+    (buf.validate.field).string.uuid = true
   ];
   string note = 2;
 
@@ -110,7 +110,7 @@ message MessageActionResponse {}
 
 message BatchMessageActionRequest {
   repeated string message_ids = 1 [
-    (validate.rules).string.uuid = true
+    (buf.validate.field).string.uuid = true
   ];
   string note = 2;
 
