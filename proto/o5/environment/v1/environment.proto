@@ -14,4 +14,8 @@ message Environment {
 
 message AWS {
   string listener_arn = 1;
+  string ecs_cluster_name = 2;
+  string ecs_repo = 3;
+  string ecs_task_execution_role = 4;
+  string vpc_id = 5;
 }
