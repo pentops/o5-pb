@@ -18,7 +18,11 @@ service DempeService {
     };
   }
 
-  rpc GetMessage(GetMessageRequest) returns (GetMessageResponse) {}
+  rpc GetMessage(GetMessageRequest) returns (GetMessageResponse) {
+    option (google.api.http) = {
+      get: "/dempe/v1/message/{message_id}"
+    };
+  }
 
   rpc MessageAction(MessageActionRequest) returns (MessageActionResponse) {
     option (google.api.http) = {
