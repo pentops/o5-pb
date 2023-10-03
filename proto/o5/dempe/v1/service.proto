@@ -26,7 +26,7 @@ service DempeService {
 
   rpc MessagesAction(MessagesActionRequest) returns (MessagesActionResponse) {
     option (google.api.http) = {
-      post: "/dempe/v1/messages/{message_id}/action"
+      post: "/dempe/v1/messages/action"
       body: "*"
     };
   }
