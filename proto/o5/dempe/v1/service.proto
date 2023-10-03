@@ -60,8 +60,8 @@ message GetMessageResponse {
 
   message GetMessageAction {
     MessageAction action = 1;
-    google.protobuf.Timestamp timestamp = 2;
-    o5.auth.v1.Actor actor = 3;
+    o5.auth.v1.Actor actor = 2;
+    google.protobuf.Timestamp timestamp = 3;
   }
   repeated GetMessageAction actions = 2;
 }
