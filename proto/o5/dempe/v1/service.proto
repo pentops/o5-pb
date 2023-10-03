@@ -24,16 +24,9 @@ service DempeService {
     };
   }
 
-  rpc MessageAction(MessageActionRequest) returns (MessageActionResponse) {
+  rpc MessagesAction(MessagesActionRequest) returns (MessagesActionResponse) {
     option (google.api.http) = {
       post: "/dempe/v1/messages/{message_id}/action"
-      body: "*"
-    };
-  }
-
-  rpc BatchMessageAction(BatchMessageActionRequest) returns (BatchMessageActionResponse) {
-    option (google.api.http) = {
-      post: "/dempe/v1/batch_messages/action"
       body: "*"
     };
   }
@@ -84,24 +77,17 @@ message MessageAction {
     // optional
     ActionDelete delete = 10;
     ActionRequeue requeue = 11;
-    ActionEdit edit = 12;
+    ActionEdit edit = 12; // Will return an error if more than one id is provided
 
     // Shelve?
   }
-
 }
 
-message MessageActionRequest {
-  string message_id = 1 [
+message MessagesActionRequest {
+  repeated string message_ids = 1 [
     (buf.validate.field).string.uuid = true
   ];
-  string note = 2;
-
-  oneof action {
-    ActionDelete delete = 10;
-    ActionRequeue requeue = 11;
-    ActionEdit edit = 12;
-  }
+  MessageAction action = 2;
 }
 
 message ActionDelete {}
@@ -112,18 +98,4 @@ message ActionEdit {
   bytes new_message_json = 1;
 }
 
-message MessageActionResponse {}
-
-message BatchMessageActionRequest {
-  repeated string message_ids = 1 [
-    (buf.validate.field).string.uuid = true
-  ];
-  string note = 2;
-
-  oneof action {
-    ActionDelete delete = 10;
-    ActionRequeue requeue = 11;
-  }
-}
-
-message BatchMessageActionResponse {}
+message MessagesActionResponse {}
