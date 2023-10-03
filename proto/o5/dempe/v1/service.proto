@@ -18,9 +18,18 @@ service DempeService {
     };
   }
 
-  rpc GetMessage(GetMessageRequest) returns (GetMessageResponse) {}
+  rpc GetMessage(GetMessageRequest) returns (GetMessageResponse) {
+    option (google.api.http) = {
+      get: "/dempe/v1/message/{message_id}"
+    };
+  }
 
-  rpc MessageAction(MessageActionRequest) returns (MessageActionResponse) {}
+  rpc MessagesAction(MessagesActionRequest) returns (MessagesActionResponse) {
+    option (google.api.http) = {
+      post: "/dempe/v1/messages/action"
+      body: "*"
+    };
+  }
 }
 
 message ListMessagesRequest {
@@ -44,37 +53,41 @@ message GetMessageRequest {
 
 message CapturedMessage {
   DeadMessage cause = 1;
-
 }
 
 message GetMessageResponse {
   CapturedMessage message = 1;
-  repeated MessageAction actions = 2;
+
+  message GetMessageAction {
+    MessageAction action = 1;
+    o5.auth.v1.Actor actor = 2;
+    google.protobuf.Timestamp timestamp = 3;
+  }
+  repeated GetMessageAction actions = 2;
 }
 
 message MessageAction {
+  string id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
 
   string note = 2;
-
-  o5.auth.v1.Actor actor = 3;
-
-  google.protobuf.Timestamp timestamp = 4;
 
   oneof action {
     // optional
     ActionDelete delete = 10;
     ActionRequeue requeue = 11;
-    ActionEdit edit = 12;
+    ActionEdit edit = 12; // Will return an error if more than one id is provided
 
     // Shelve?
   }
-
 }
 
-message MessageActionRequest {
-  string message_id = 1;
+message MessagesActionRequest {
+  repeated string message_ids = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
   MessageAction action = 2;
-
 }
 
 message ActionDelete {}
@@ -85,4 +98,4 @@ message ActionEdit {
   bytes new_message_json = 1;
 }
 
-message MessageActionResponse {}
+message MessagesActionResponse {}
