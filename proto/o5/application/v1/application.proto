@@ -11,35 +11,22 @@ message Application {
     (buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$"
   ];
 
-  repeated string sub_environments = 2;
+  //repeated string sub_environments = 2;
 
-  repeated Subscription subscriptions = 3;
-  repeated Target targets = 4;
-  repeated Ingress ingress = 5;
+  //repeated Target targets = 4;
 
-  repeated Blobstore blobstores = 6;
-  repeated Database databases = 7;
-  repeated Runtime runtimes = 8;
-
+  repeated Blobstore blobstores = 7;
+  repeated Database databases = 8;
+  repeated Runtime runtimes = 9;
 }
 
-// Ingress configures inbound request traffic to the application
-message Ingress {
-  string name = 1 [
-    (buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$"
-  ];
-  repeated HTTPRoute http_routes = 2;
-  repeated GRPCRoute grpc_routes = 3;
-}
 
-message HTTPRoute {
+message Route {
   string prefix = 1;
-  string target_runtime = 2;
-}
 
-message GRPCRoute {
-  string prefix = 1;
-  string target_runtime = 2;
+  string target_container = 2; // Default: first defined container
+  bool bypass_ingress = 3; // Default: false
+  int64 port = 4; // Default: 8080
 }
 
 enum Topology {
@@ -93,7 +80,18 @@ message Runtime {
     (buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$"
   ];
 
+  // When true, HTTP and gRPC requests will be routed directly to the runtime
+  // container, not via the ingress sidecar. The runtime container is
+  // responsible for all security, throttling etc.
+  bool direct_ingress = 2;
+
   repeated Container containers = 3;
+
+  repeated Route http_routes = 4;
+  repeated Route grpc_routes = 5;
+
+  //repeated Subscription subscriptions = 3;
+
 }
 
 enum Demand {
