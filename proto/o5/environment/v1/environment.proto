@@ -18,4 +18,8 @@ message AWS {
   string ecs_repo = 3;
   string ecs_task_execution_role = 4;
   string vpc_id = 5;
+
+  // when set, adds a host header rule exactly as defined to all listener rules.
+  // This allows re-use of the same listener for multiple (related) environments.
+  optional string host_header = 6;
 }

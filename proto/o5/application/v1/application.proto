@@ -15,18 +15,11 @@ message Application {
 
   //repeated Target targets = 4;
 
+
   repeated Blobstore blobstores = 7;
   repeated Database databases = 8;
   repeated Runtime runtimes = 9;
-}
-
-
-message Route {
-  string prefix = 1;
-
-  string target_container = 2; // Default: first defined container
-  bool bypass_ingress = 3; // Default: false
-  int64 port = 4; // Default: 8080
+  repeated Secret secrets = 10;
 }
 
 enum Topology {
@@ -38,16 +31,17 @@ enum Topology {
 
 message Subscription {
   string name = 1;
-  Topology topology = 2;
+  //Topology topology = 2;
 }
 
 message Target {
   string name = 1;
-  Topology topology = 2;
+  //Topology topology = 2;
 }
 
 message Blobstore {
   string name = 1;
+
 }
 
 message Database  {
@@ -87,11 +81,41 @@ message Runtime {
 
   repeated Container containers = 3;
 
-  repeated Route http_routes = 4;
-  repeated Route grpc_routes = 5;
+  repeated Route routes = 4;
 
   //repeated Subscription subscriptions = 3;
 
+}
+
+message Route {
+  // Default is not to filter, but requires the route_group to be FALLBACK
+  string prefix = 1;
+
+  RouteProtocol protocol = 2 [
+    (buf.validate.field).enum = {
+      defined_only: true
+      not_in: [0]
+    }
+  ];
+
+  string target_container = 3; // Default: first defined container
+  bool bypass_ingress = 4; // Default: false
+  int64 port = 5; // Default: 8080
+  RouteGroup route_group = 6; // Default: NORMAL
+}
+
+
+enum RouteProtocol {
+  ROUTE_PROTOCOL_UNSPECIFIED = 0;
+  ROUTE_PROTOCOL_HTTP = 1;
+  ROUTE_PROTOCOL_GRPC = 2;
+}
+
+enum RouteGroup {
+  ROUTE_GROUP_UNSPECIFIED = 0;
+  ROUTE_GROUP_FIRST = 1;
+  ROUTE_GROUP_NORMAL = 2;
+  ROUTE_GROUP_FALLBACK = 3;
 }
 
 enum Demand {
@@ -113,7 +137,13 @@ message Container {
 
   message Image {
     string name = 1;
-    string tag = 2;
+
+    // Defaults to the full git hash being deployed (or passed in --version
+    // parameter)
+    optional string tag = 2;
+
+    // Defaults to the environment's registry, set here to override
+    optional string registry = 3;
   }
 
   // The amount of Memory and CPU to allocate to the container
@@ -132,6 +162,7 @@ message EnvironmentVariable {
     BlobstoreEnvVar blobstore = 11;
     MapEnvVar env_map = 12;
     FromEnvVar from_env = 13;
+    SecretEnvVar secret = 14;
   }
 }
 
@@ -143,8 +174,26 @@ message DatabaseEnvVar {
 
 }
 
-message BlobstoreEnvVar {}
+message BlobstoreEnvVar {
+  string name = 1;
+  optional string sub_path = 2;
+
+  oneof format {
+    // Sets the variable as s3://<bucket>/<?sub_path>
+    // TODO: Deprecate this and build a wrapper through the sidecar
+    bool s3_direct = 10;
+  }
+}
 
 message MapEnvVar {}
 
 message FromEnvVar {}
+
+message SecretEnvVar {
+  string secret_name = 1;
+  string json_key = 2;
+}
+
+message Secret {
+  string name = 1;
+}
