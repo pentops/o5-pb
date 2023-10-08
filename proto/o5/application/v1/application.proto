@@ -187,7 +187,9 @@ message BlobstoreEnvVar {
 
 message MapEnvVar {}
 
-message FromEnvVar {}
+message FromEnvVar {
+  string name = 1;
+}
 
 message SecretEnvVar {
   string secret_name = 1;

@@ -10,7 +10,23 @@ message Environment {
   oneof provider {
     AWS aws = 10;
   }
+
+  repeated CustomVariable vars = 2;
 }
+
+message CustomVariable {
+  string name = 1;
+  // oneof, but logically, because repeated oneof isn't a thing
+  oneof src {
+    string value = 10;
+    Join join = 11;
+  }
+  message Join {
+    string delimiter = 1;
+    repeated string values = 2;
+  }
+}
+
 
 message AWS {
   string listener_arn = 1;
@@ -22,4 +38,11 @@ message AWS {
   // when set, adds a host header rule exactly as defined to all listener rules.
   // This allows re-use of the same listener for multiple (related) environments.
   optional string host_header = 6;
+
+  repeated RDSHost rds_hosts = 7;
+}
+
+message RDSHost {
+  string server_group = 1;
+  string secret_name = 2;
 }
