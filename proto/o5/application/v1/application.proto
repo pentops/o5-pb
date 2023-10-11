@@ -20,19 +20,11 @@ message Application {
   repeated Database databases = 8;
   repeated Runtime runtimes = 9;
   repeated Secret secrets = 10;
+
+
 }
 
-enum Topology {
-  TOPOLOGY_UNSPECIFIED = 0;
-  TOPOLOGY_BROADCAST = 1;
-  TOPOLOGY_UNICAST = 2;
-  TOPOLOGY_REPLY = 3;
-}
 
-message Subscription {
-  string name = 1;
-  //Topology topology = 2;
-}
 
 message Target {
   string name = 1;
@@ -83,8 +75,19 @@ message Runtime {
 
   repeated Route routes = 4;
 
-  //repeated Subscription subscriptions = 3;
+  repeated Subscription subscriptions = 5;
 
+  // when true, marks this application as a deployer app, meaning it should have
+  // permissions to deploy itself and other permissions
+  bool grant_meta_deploy_permissions = 6;
+}
+
+message Subscription {
+  string name = 1;
+  optional string env_name = 2;
+
+  string target_container = 3; // Default: first defined container
+  int64 port = 4; // Default: 8081
 }
 
 message Route {
