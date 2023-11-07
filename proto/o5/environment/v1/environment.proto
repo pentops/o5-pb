@@ -11,6 +11,8 @@ message Environment {
     AWS aws = 10;
   }
 
+  repeated string trust_jwks = 3;
+
   repeated CustomVariable vars = 2;
 }
 
