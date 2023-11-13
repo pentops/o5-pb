@@ -4,7 +4,6 @@ package o5.deployer.v1.topic;
 
 import "google/protobuf/empty.proto";
 import "o5/deployer/v1/application.proto";
-import "o5/deployer/v1/deployment.proto";
 
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_tpb";
 
@@ -72,22 +71,3 @@ message RunDatabaseMigrationMessage {
   string ecs_cluster_name = 8;
 }
 
-service AWSStatusTopic {
-  rpc StackStatusChanged (StackStatusChangedMessage) returns (google.protobuf.Empty) {}
-  rpc MigrationStatusChanged (MigrationStatusChangedMessage) returns (google.protobuf.Empty) {}
-}
-
-message StackStatusChangedMessage {
-  string stack_name = 1;
-  string status = 2;
-  repeated o5.deployer.v1.KeyValue outputs = 3;
-  deployer.v1.StackLifecycle lifecycle = 4;
-}
-
-message MigrationStatusChangedMessage {
-  string migration_id = 1;
-  string deployment_id = 2;
-  o5.deployer.v1.DatabaseMigrationStatus status = 3;
-  optional string error = 4;
-
-}

@@ -115,6 +115,7 @@ message DeploymentEventType {
 
     DataMigrated data_migrated = 12;
 
+    Error error = 99;
     Done done = 100;
   }
 
@@ -163,6 +164,9 @@ message DeploymentEventType {
   message DataMigrated {
   }
 
+  message Error {
+    string error = 1;
+  }
 
   message Done { }
 
