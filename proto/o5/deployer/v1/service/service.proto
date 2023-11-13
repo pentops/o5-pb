@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package o5.deployer.v1.service;
+
+import "google/api/annotations.proto";
+import "listify/v1/fields.proto";
+import "o5/deployer/v1/deployment.proto";
+
+option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
+
+service DeploymentQueryService {
+  rpc GetDeployment(GetDeploymentRequest) returns (GetDeploymentResponse) {
+    option (google.api.http) = {
+      get: "/deployer/v1/deployment/{deployment_id}"
+    };
+  }
+
+  rpc ListDeploymentEvents(ListDeploymentEventsRequest) returns (ListDeploymentEventsResponse) {
+    option (google.api.http) = {
+      post: "/deployer/v1/deployment/{deployment_id}/events"
+      body: "*"
+    };
+  }
+
+  rpc ListDeployments(ListDeploymentsRequest) returns (ListDeploymentsResponse) {
+    option (google.api.http) = {
+      post: "/deployer/v1/deployments"
+      body: "*"
+    };
+  }
+}
+
+message GetDeploymentRequest {
+  string deployment_id = 1;
+}
+
+message GetDeploymentResponse {
+  o5.deployer.v1.DeploymentState deployment = 1;
+  ListDeploymentEventsResponse events = 2;
+}
+
+message ListDeploymentEventsRequest {
+  string deployment_id = 1;
+
+  listify.v1.PageRequest     page    = 100;
+  listify.v1.Search          search  = 101;
+  repeated listify.v1.Sort   sorts   = 102;
+  repeated listify.v1.Filter filters = 103;
+}
+
+message ListDeploymentEventsResponse {
+  repeated o5.deployer.v1.DeploymentEvent events = 1;
+
+  listify.v1.PageResponse page = 100;
+}
+
+message ListDeploymentsRequest {
+  listify.v1.PageRequest     page    = 100;
+  listify.v1.Search          search  = 101;
+  repeated listify.v1.Sort   sorts   = 102;
+  repeated listify.v1.Filter filters = 103;
+}
+
+message ListDeploymentsResponse {
+  repeated o5.deployer.v1.DeploymentState deployments = 1;
+
+  listify.v1.PageResponse page = 100;
+}
