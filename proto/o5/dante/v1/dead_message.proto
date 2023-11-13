@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-package o5.dempe.v1;
+package o5.dante.v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "buf/validate/validate.proto";
 
-option go_package = "github.com/pentops/o5-go/dempe/v1/dempe_pb";
+option go_package = "github.com/pentops/o5-go/dante/v1/dante_pb";
 
 
 message DeadMessage {
