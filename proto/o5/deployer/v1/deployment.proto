@@ -1,0 +1,190 @@
+syntax = "proto3";
+
+package o5.deployer.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "o5/deployer/v1/application.proto";
+
+option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
+
+message DeploymentState {
+  string deployment_id = 1;
+  DeploymentStatus status = 2;
+  DeploymentSpec spec = 3;
+  string stack_name = 4;
+  repeated KeyValue stack_output = 6;
+
+
+  repeated DatabaseMigrationState data_migrations = 5;
+}
+
+message DeploymentSpec {
+  string app_name = 1;
+  string version = 2;
+  string environment_name = 3;
+  string template_url = 4;
+  bool cancel_updates = 8;
+  bool rotate_credentials = 9;
+
+  repeated PostgresDatabase databases = 5;
+  repeated Parameter parameters = 6;
+  repeated SNSTopic sns_topics = 7;
+}
+
+
+enum DeploymentStatus {
+  DEPLOYMENT_STATUS_UNSPECIFIED = 0;
+  DEPLOYMENT_STATUS_QUEUED = 1;
+  DEPLOYMENT_STATUS_LOCKED = 2;
+  DEPLOYMENT_STATUS_WAITING = 3;
+  DEPLOYMENT_STATUS_AVAILABLE = 4;
+  DEPLOYMENT_STATUS_SCALING_DOWN = 5;
+  DEPLOYMENT_STATUS_SCALED_DOWN = 6;
+  DEPLOYMENT_STATUS_INFRA_MIGRATE = 7;
+  DEPLOYMENT_STATUS_INFRA_MIGRATED = 8;
+  DEPLOYMENT_STATUS_DB_MIGRATING = 9;
+  DEPLOYMENT_STATUS_DB_MIGRATED = 10;
+  DEPLOYMENT_STATUS_SCALING_UP = 11;
+  DEPLOYMENT_STATUS_SCALED_UP = 12;
+  DEPLOYMENT_STATUS_CREATING = 13;
+  DEPLOYMENT_STATUS_NEW = 14;
+
+  DEPLOYMENT_STATUS_DONE = 100;
+  DEPLOYMENT_STATUS_FAILED = 101;
+}
+
+
+message Actor {}
+
+message EventMetadata {
+  string event_id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
+  google.protobuf.Timestamp timestamp = 2 [
+    (buf.validate.field).required = true
+  ];
+  Actor actor = 3;
+}
+
+message DeploymentEvent {
+  EventMetadata metadata = 1;
+  string deployment_id = 2;
+  DeploymentEventType event = 3;
+}
+
+enum StackLifecycle {
+  STACK_LIFECYCLE_UNSPECIFIED = 0;
+
+  // Progressing well, no errors, no rollback
+  STACK_LIFECYCLE_PROGRESS = 1;
+
+  // Update or Create Completed successfully
+  STACK_LIFECYCLE_COMPLETE = 2;
+
+  // Rolling back to previous version or deleting on create failure
+  STACK_LIFECYCLE_ROLLING_BACK = 3;
+
+  // Create failure, rolled back to nothing
+  STACK_LIFECYCLE_CREATE_FAILED = 4;
+
+  // Update failure, rolled back to previous version
+  STACK_LIFECYCLE_TERMINAL = 5;
+
+  // Missing, not present currently, either never created or deleted, not not
+  // 'rolled back'
+  STACK_LIFECYCLE_MISSING = 6;
+}
+
+
+message DeploymentEventType {
+  oneof type {
+    Triggered triggered = 1;
+    GotLock got_lock = 2;
+
+    StackCreate stack_create = 3;
+
+    StackWait stack_wait = 4;
+    StackScale stack_scale = 13;
+    StackTrigger stack_trigger = 5;
+    StackStatus stack_status = 6;
+
+    MigrateData migrate_data = 8;
+
+    DBMigrateStatus db_migrate_status = 9;
+
+    DataMigrated data_migrated = 12;
+
+    Done done = 100;
+  }
+
+  message Triggered {
+    DeploymentSpec spec = 1;
+  }
+
+  message GotLock { }
+
+  message StackCreate {
+  }
+
+  // Waits for the stack to be ready, without making any changes
+  message StackWait {
+  }
+
+  message StackScale {
+    int32 desired_count= 1;
+  }
+
+  // Triggers a stack update, then wait
+  message StackTrigger {
+    string phase = 1;
+  }
+
+  message StackStatus {
+    StackLifecycle lifecycle = 1;
+    string full_status = 2;
+    repeated KeyValue stack_output = 3;
+  }
+
+
+  // Triggers a DB migration of 0 or more databases
+  message MigrateData {
+    repeated DatabaseMigration databases = 1;
+  }
+
+  message DBMigrateStatus{
+    string db_name = 1;
+    string migration_id = 2;
+    DatabaseMigrationStatus status = 3;
+    optional string error = 4;
+  }
+
+  // Triggered when all the DBs are migrated
+  message DataMigrated {
+  }
+
+
+  message Done { }
+
+}
+
+message DatabaseMigration {
+  string migration_id = 1;
+  string db_name = 2;
+}
+
+message DatabaseMigrationState {
+  string migration_id = 1;
+  string db_name = 2;
+  bool rotate_credentials = 3;
+  DatabaseMigrationStatus status = 4;
+}
+
+enum DatabaseMigrationStatus {
+  DATABASE_MIGRATION_STATUS_UNSPECIFIED = 0;
+  DATABASE_MIGRATION_STATUS_PENDING = 1;
+  DATABASE_MIGRATION_STATUS_RUNNING = 2;
+  DATABASE_MIGRATION_STATUS_CLEANUP = 3;
+  DATABASE_MIGRATION_STATUS_COMPLETED = 4;
+  DATABASE_MIGRATION_STATUS_FAILED = 5;
+}
