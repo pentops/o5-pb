@@ -36,6 +36,8 @@ message CreateNewStackMessage {
   string template_url = 2;
   repeated o5.deployer.v1.CloudFormationStackParameter parameters = 4;
   int32 desired_count = 5;
+  string client_token = 6;
+  repeated string sns_topics = 7;
 }
 
 message UpdateStackMessage {
@@ -43,6 +45,8 @@ message UpdateStackMessage {
   string template_url = 2;
   repeated o5.deployer.v1.CloudFormationStackParameter parameters = 4;
   int32 desired_count = 5;
+  string client_token = 6;
+  repeated string sns_topics = 7;
 }
 
 message DeleteStackMessage {

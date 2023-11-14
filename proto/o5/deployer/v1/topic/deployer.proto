@@ -34,6 +34,7 @@ message StackStatusChangedMessage {
   string status = 2;
   repeated o5.deployer.v1.KeyValue outputs = 3;
   deployer.v1.StackLifecycle lifecycle = 4;
+  string client_token = 5;
 }
 
 message MigrationStatusChangedMessage {
