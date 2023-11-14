@@ -4,11 +4,14 @@ package o5.deployer.v1.topic;
 
 import "google/protobuf/empty.proto";
 import "o5/deployer/v1/application.proto";
+import "o5/messaging/v1/annotations.proto";
 
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_tpb";
 
 
 service AWSCommandTopic {
+  option (o5.messaging.v1.config).unicast.name = "o5-aws-command";
+
   rpc CreateNewStack (CreateNewStackMessage) returns (google.protobuf.Empty) {}
   rpc UpdateStack (UpdateStackMessage) returns (google.protobuf.Empty) {}
   rpc DeleteStack (DeleteStackMessage) returns (google.protobuf.Empty) {}
@@ -31,13 +34,15 @@ message StabalizeStackMessage {
 message CreateNewStackMessage {
   string stack_name = 1;
   string template_url = 2;
-  repeated o5.deployer.v1.KeyValue parameters = 4;
+  repeated o5.deployer.v1.CloudFormationStackParameter parameters = 4;
+  int32 desired_count = 5;
 }
 
 message UpdateStackMessage {
   string stack_name = 1;
   string template_url = 2;
-  repeated o5.deployer.v1.KeyValue parameters = 4;
+  repeated o5.deployer.v1.CloudFormationStackParameter parameters = 4;
+  int32 desired_count = 5;
 }
 
 message DeleteStackMessage {

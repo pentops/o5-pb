@@ -65,3 +65,24 @@ message KeyValue {
   string name = 1;
   string value = 2;
 }
+
+message CloudFormationStackParameter {
+  string name = 1;
+
+  oneof source {
+    string value = 2;
+    CloudFormationStackParameterType resolve = 3;
+  }
+}
+
+message CloudFormationStackParameterType {
+  oneof type {
+    RulePriority rule_priority = 3;
+    DesiredCount desired_count = 4;
+  }
+  message RulePriority {
+    o5.application.v1.RouteGroup route_group = 1;
+  }
+  message DesiredCount {
+  }
+}
