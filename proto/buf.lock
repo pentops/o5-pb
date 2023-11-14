@@ -13,6 +13,6 @@ deps:
     digest: shake256:49215edf8ef57f7863004539deff8834cfb2195113f0b890dd1f67815d9353e28e668019165b9d872395871eeafcbab3ccfdb2b5f11734d3cca95be9e8d139de
   - remote: buf.build
     owner: pentops
-    repository: protoc-gen-listify
-    commit: 9207ab6bdd894c47a70b75c050ae230b
-    digest: shake256:53d6f9cca1ed04b2e42d07dbd6f0b4f05126ae5a0ea048489352bacd83c0fc473a552889fdb0cecd81e5b87dd7d9edae2388ffbc622882ecefcbdcac11782f58
+    repository: listify
+    commit: 0d4092d1094a4cdf87258737970f07fb
+    digest: shake256:ff198d6c8580b8a37012d05b712844b8e2f3459f8ffc609cf7101ad033883dd3c14d7094c24f47c33019336c3a028fc0d5f55ed2a49be5b5ca88244792e8c9eb
