@@ -27,6 +27,7 @@ service AWSCommandTopic {
 message StabalizeStackMessage {
   string stack_name = 1;
   bool cancel_update = 2;
+  string client_token = 6;
 }
 
 message CreateNewStackMessage {
