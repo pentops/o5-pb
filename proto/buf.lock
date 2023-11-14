@@ -14,5 +14,5 @@ deps:
   - remote: buf.build
     owner: pentops
     repository: listify
-    commit: 0d4092d1094a4cdf87258737970f07fb
-    digest: shake256:ff198d6c8580b8a37012d05b712844b8e2f3459f8ffc609cf7101ad033883dd3c14d7094c24f47c33019336c3a028fc0d5f55ed2a49be5b5ca88244792e8c9eb
+    commit: 12f9f3ecae8d45c8bd5b1317ff75212c
+    digest: shake256:cb181bb3547f4df550c1f2cd91d6f91cabfc3e28c643c42c9f3c9db9c8cd4bd9e23ff5c9951b2d310dbbfa5fcbc4d30c09becd6fd98581eafbc3733fdec24dd9
