@@ -3,7 +3,8 @@ syntax = "proto3";
 package o5.deployer.v1.service;
 
 import "google/api/annotations.proto";
-import "listify/v1/fields.proto";
+import "listify/query/v1/page.proto";
+import "listify/query/v1/query.proto";
 import "o5/deployer/v1/deployment.proto";
 
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
@@ -42,27 +43,27 @@ message GetDeploymentResponse {
 message ListDeploymentEventsRequest {
   string deployment_id = 1;
 
-  listify.v1.PageRequest     page    = 100;
-  listify.v1.Search          search  = 101;
-  repeated listify.v1.Sort   sorts   = 102;
-  repeated listify.v1.Filter filters = 103;
+  listify.query.v1.PageRequest     page    = 100;
+  listify.query.v1.Search          search  = 101;
+  repeated listify.query.v1.Sort   sorts   = 102;
+  repeated listify.query.v1.Filter filters = 103;
 }
 
 message ListDeploymentEventsResponse {
   repeated o5.deployer.v1.DeploymentEvent events = 1;
 
-  listify.v1.PageResponse page = 100;
+  listify.query.v1.PageResponse page = 100;
 }
 
 message ListDeploymentsRequest {
-  listify.v1.PageRequest     page    = 100;
-  listify.v1.Search          search  = 101;
-  repeated listify.v1.Sort   sorts   = 102;
-  repeated listify.v1.Filter filters = 103;
+  listify.query.v1.PageRequest     page    = 100;
+  listify.query.v1.Search          search  = 101;
+  repeated listify.query.v1.Sort   sorts   = 102;
+  repeated listify.query.v1.Filter filters = 103;
 }
 
 message ListDeploymentsResponse {
   repeated o5.deployer.v1.DeploymentState deployments = 1;
 
-  listify.v1.PageResponse page = 100;
+  listify.query.v1.PageResponse page = 100;
 }
