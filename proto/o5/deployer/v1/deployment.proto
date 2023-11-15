@@ -11,9 +11,9 @@ option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
 
 message DeploymentState {
   string deployment_id = 1;
-  DeploymentStatus status = 2;
+  DeploymentStatus status = 2 [(listify.annotations.v1.rules).enum.filtering = { filterable: true }];
   DeploymentSpec spec = 3;
-  string stack_name = 4;
+  string stack_name = 4 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
   repeated KeyValue stack_output = 6;
 
 
@@ -21,12 +21,12 @@ message DeploymentState {
 }
 
 message DeploymentSpec {
-  string app_name = 1;
-  string version = 2;
-  string environment_name = 3;
-  string template_url = 4;
-  bool cancel_updates = 8;
-  bool rotate_credentials = 9;
+  string app_name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string version = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string environment_name = 3 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string template_url = 4 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  bool cancel_updates = 8 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
+  bool rotate_credentials = 9 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
 
   repeated PostgresDatabase databases = 5;
   repeated Parameter parameters = 6;
@@ -179,10 +179,10 @@ message DatabaseMigration {
 }
 
 message DatabaseMigrationState {
-  string migration_id = 1;
-  string db_name = 2;
-  bool rotate_credentials = 3;
-  DatabaseMigrationStatus status = 4;
+  string migration_id = 1 [(listify.annotations.v1.rules).string.foreign_key.uuid.filtering.filterable = true];
+  string db_name = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  bool rotate_credentials = 3 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
+  DatabaseMigrationStatus status = 4 [(listify.annotations.v1.rules).enum.filtering = { filterable: true }];
 }
 
 enum DatabaseMigrationStatus {

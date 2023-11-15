@@ -10,21 +10,23 @@ option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
 
 message PostgresDatabase {
   o5.application.v1.Database database = 1;
-  optional string migration_task_output_name = 2;
-	optional string secret_output_name = 3;
+  optional string migration_task_output_name = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+	optional string secret_output_name = 3 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
 }
 
 message Parameter {
-  string name = 1;
-  string type = 2;
-  string description = 3;
+  string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string type = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string description = 3 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
   ParameterSourceType source = 4;
 
-  repeated string args = 6;
+  repeated string args = 6 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
 }
 
 message ParameterSourceType {
   oneof type {
+    option (listify.annotations.v1.oneof_rules).filtering.filterable = true;
+
     Static static = 1;
     WellKnown well_known = 2;
     RulePriority rule_priority = 3;
@@ -34,37 +36,37 @@ message ParameterSourceType {
   }
 
   message Static {
-    string value = 1;
+    string value = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
   }
 
   message WellKnown {
-    string name = 1;
+    string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
   }
 
   message RulePriority {
-    o5.application.v1.RouteGroup route_group = 1;
+    o5.application.v1.RouteGroup route_group = 1 [(listify.annotations.v1.rules).enum.filtering = { filterable: true }];
   }
 
   message DesiredCount {
   }
 
   message CrossEnvSns {
-    string env_name = 1;
+    string env_name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
   }
 
   message EnvVar {
-    string name = 1;
+    string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
   }
 }
 
 
 message SNSTopic {
-  string name = 1;
+  string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
 }
 
 message KeyValue {
-  string name = 1;
-  string value = 2;
+  string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string value = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
 }
 
 message CloudFormationStackParameter {
