@@ -8,6 +8,7 @@ import "buf/validate/validate.proto";
 import "google/protobuf/empty.proto";
 import "o5/deployer/v1/application.proto";
 import "o5/deployer/v1/deployment.proto";
+import "o5/deployer/v1/topic/aws.proto";
 import "o5/messaging/v1/annotations.proto";
 
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_tpb";
@@ -30,11 +31,10 @@ message TriggerDeploymentMessage {
 }
 
 message StackStatusChangedMessage {
-  string stack_name = 1;
+  StackID stack_id = 1;
   string status = 2;
   repeated o5.deployer.v1.KeyValue outputs = 3;
   deployer.v1.StackLifecycle lifecycle = 4;
-  string client_token = 5;
 }
 
 message MigrationStatusChangedMessage {

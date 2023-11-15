@@ -57,6 +57,8 @@ message Database  {
 
     Container migrate_container = 4;
 
+    bool run_outbox = 5;
+
   }
 }
 
