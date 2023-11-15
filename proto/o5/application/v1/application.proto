@@ -13,7 +13,7 @@ message Application {
 
   //repeated string sub_environments = 2;
 
-  //repeated Target targets = 4;
+  repeated Target targets = 4;
 
 
   repeated Blobstore blobstores = 7;
