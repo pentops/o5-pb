@@ -27,6 +27,10 @@ message DeploymentSpec {
   string template_url = 4 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
   bool cancel_updates = 8 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
   bool rotate_credentials = 9 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
+  string ecs_cluster = 10 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+
+  // Skips scale up/down, directly applying the updates in one infra call.
+  bool quick_mode = 11 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
 
   repeated PostgresDatabase databases = 5;
   repeated Parameter parameters = 6;
@@ -50,6 +54,7 @@ enum DeploymentStatus {
   DEPLOYMENT_STATUS_SCALED_UP = 12;
   DEPLOYMENT_STATUS_CREATING = 13;
   DEPLOYMENT_STATUS_NEW = 14;
+  DEPLOYMENT_STATUS_UPSERTING = 15; // Single shot upsert of stack
 
   DEPLOYMENT_STATUS_DONE = 100;
   DEPLOYMENT_STATUS_FAILED = 101;
@@ -108,6 +113,7 @@ message DeploymentEventType {
     StackWait stack_wait = 4;
     StackScale stack_scale = 13;
     StackTrigger stack_trigger = 5;
+    StackUpsert stack_upsert = 7;
     StackStatus stack_status = 6;
 
     MigrateData migrate_data = 8;
@@ -129,6 +135,7 @@ message DeploymentEventType {
   message StackCreate {
   }
 
+
   // Waits for the stack to be ready, without making any changes
   message StackWait {
   }
@@ -140,6 +147,13 @@ message DeploymentEventType {
   // Triggers a stack update, then wait
   message StackTrigger {
     string phase = 1;
+  }
+
+  // Triggers a stack be created or updated to the latest version, fully scaled,
+  // in one single infra call. This is performed prior to DB migrations, so be
+  // careful with the compatibility of the two, i.e. the service must be able to
+  // come online prior to the DB migration completing.
+  message StackUpsert {
   }
 
   message StackStatus {

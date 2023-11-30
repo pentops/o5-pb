@@ -22,7 +22,13 @@ message Application {
   repeated Runtime runtimes = 9;
   repeated Secret secrets = 10;
 
+  DeploymentConfig deployment_config = 11;
+}
 
+message DeploymentConfig {
+  // Migrates the stack in one single call, not compatible with database
+  // migration
+  bool quick_mode = 1;
 }
 
 
@@ -34,7 +40,11 @@ message Target {
 
 message Blobstore {
   string name = 1;
+  repeated Grant grants = 2;
+}
 
+message Grant {
+  string principal = 1; // This is a lookup in the env file
 }
 
 message Database  {
