@@ -16,8 +16,13 @@ option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_tpb";
 
 service DeployerTopic {
   option (o5.messaging.v1.config).unicast.name = "o5-deployer-input";
-  rpc TriggerDeployment (TriggerDeploymentMessage) returns (google.protobuf.Empty) {}
 
+  // Handled by the Stack side
+  rpc TriggerDeployment (TriggerDeploymentMessage) returns (google.protobuf.Empty) {}
+  rpc DeploymentComplete (DeploymentCompleteMessage) returns (google.protobuf.Empty) {}
+  rpc DeploymentFailed (DeploymentFailedMessage) returns (google.protobuf.Empty) {}
+
+  // Returns from AWS Infra
   rpc StackStatusChanged (StackStatusChangedMessage) returns (google.protobuf.Empty) {}
   rpc MigrationStatusChanged (MigrationStatusChangedMessage) returns (google.protobuf.Empty) {}
 }
@@ -42,5 +47,31 @@ message MigrationStatusChangedMessage {
   string deployment_id = 2;
   o5.deployer.v1.DatabaseMigrationStatus status = 3;
   optional string error = 4;
-
 }
+
+
+message DeploymentCompleteMessage {
+  string deployment_id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
+  string stack_id = 2 [
+    (buf.validate.field).string.uuid = true
+  ];
+  string version = 3;
+  string environment_name = 4;
+  string application_name = 5;
+}
+
+message DeploymentFailedMessage {
+  string deployment_id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
+  string stack_id = 2 [
+    (buf.validate.field).string.uuid = true
+  ];
+  string version = 3;
+  string environment_name = 4;
+  string application_name = 5;
+  string error = 6;
+}
+

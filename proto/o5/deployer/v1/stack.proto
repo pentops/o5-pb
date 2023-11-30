@@ -4,6 +4,7 @@ syntax = "proto3";
 package o5.deployer.v1;
 
 import "buf/validate/validate.proto";
+import "o5/deployer/v1/event.proto";
 
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
 
@@ -11,13 +12,14 @@ message StackState {
   string stack_id = 1 [
     (buf.validate.field).string.uuid = true
   ];
+  StackStatus status = 2;
 
-  optional StackDeployment current_deployment = 2;
+  optional StackDeployment current_deployment = 3;
 
-  string application_name = 3;
-  string environment_name = 4;
+  string application_name = 4;
+  string environment_name = 5;
 
-  repeated StackDeployment queued_deployments = 5;
+  repeated StackDeployment queued_deployments = 6;
 }
 
 enum StackStatus {
@@ -33,4 +35,32 @@ message StackDeployment {
     (buf.validate.field).string.uuid = true
   ];
   string version = 2;
+}
+
+message StackEvent {
+  EventMetadata metadata = 1;
+  string stack_id = 2;
+  StackEventType event = 3;
+}
+
+message StackEventType{
+  oneof type {
+    Triggered triggered = 1;
+    DeploymentCompleted deployment_completed = 2;
+    DeploymentFailed deployment_failed = 3;
+  }
+
+  message Triggered {
+    StackDeployment deployment = 1;
+  }
+
+  message DeploymentCompleted {
+    StackDeployment deployment = 1;
+  }
+
+  message DeploymentFailed {
+    StackDeployment deployment = 1;
+    string error = 2;
+  }
+
 }

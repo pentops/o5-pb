@@ -2,6 +2,23 @@ Deployer
 ========
 
 
+## Stack State
+
+```mermaid
+stateDiagram-v2
+	classDef error stroke:red,fill:#330000
+
+	[*] --> CREATING : Triggered
+	CREATING --> CREATING : Triggered<br>(Adds to the queue)
+	CREATING --> STABLE : DeploymentCompleted
+	STABLE --> MIGRATING : Triggered<br>(Pops from queue)
+	STABLE --> MIGRATING : Triggered<br>(External)
+	MIGRATING --> STABLE : DeploymentCompleted
+	MIGRATING --> MIGRATING : Triggered<br>(Adds to the queue)
+	CREATING --> BROKEN:::error : CreateErrored
+	MIGRATING --> BROKEN : MigrateErrored
+```
+
 ## Deployment State
 
 ```mermaid
@@ -9,9 +26,9 @@ stateDiagram-v2
     classDef auto stroke:green,fill:#003300
 	classDef failed stroke:red,fill:#330000
 
-    [*] --> QUEUED : Triggered
-    QUEUED --> LOCKED: GotLock
-    LOCKED:::auto --> WAITING : StackWait
+    [*] --> QUEUED : Requested
+	QUEUED --> TRIGGERED : Triggered
+    TRIGGERED:::auto --> WAITING : StackWait
 
     WAITING --> WAITING : StackStatus.Progress
 	FAILED_1:::failed : FAILED
@@ -64,20 +81,3 @@ stateDiagram-v2
 
 ```
 
-
-## Stack State
-
-```mermaid
-stateDiagram-v2
-	classDef error stroke:red,fill:#330000
-
-	[*] --> CREATING : Triggered
-	CREATING --> CREATING : Triggered<br>(Adds to the queue)
-	CREATING --> STABLE : CreateCompleted
-	STABLE --> MIGRATING : Triggered<br>(Pops from queue)
-	STABLE --> MIGRATING : Triggered<br>(External)
-	MIGRATING --> STABLE : MigrateComplete
-	MIGRATING --> MIGRATING : Triggered<br>(Adds to the queue)
-	CREATING --> BROKEN:::error : CreateErrored
-	MIGRATING --> BROKEN : MigrateErrored
-```

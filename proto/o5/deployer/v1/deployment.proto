@@ -2,10 +2,9 @@ syntax = "proto3";
 
 package o5.deployer.v1;
 
-import "buf/validate/validate.proto";
-import "google/protobuf/timestamp.proto";
 import "listify/annotations/v1/annotations.proto";
 import "o5/deployer/v1/application.proto";
+import "o5/deployer/v1/event.proto";
 
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
 
@@ -13,8 +12,12 @@ message DeploymentState {
   string deployment_id = 1;
   DeploymentStatus status = 2 [(listify.annotations.v1.rules).enum.filtering = { filterable: true }];
   DeploymentSpec spec = 3;
+
   string stack_name = 4 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string stack_id = 7 [(listify.annotations.v1.rules).string.foreign_key.uuid.filtering.filterable = true];
+
   repeated KeyValue stack_output = 6;
+
 
 
   repeated DatabaseMigrationState data_migrations = 5;
@@ -25,6 +28,8 @@ message DeploymentSpec {
   string version = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
   string environment_name = 3 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
   string template_url = 4 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+
+
   bool cancel_updates = 8 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
   bool rotate_credentials = 9 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
   string ecs_cluster = 10 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
@@ -41,7 +46,7 @@ message DeploymentSpec {
 enum DeploymentStatus {
   DEPLOYMENT_STATUS_UNSPECIFIED = 0;
   DEPLOYMENT_STATUS_QUEUED = 1;
-  DEPLOYMENT_STATUS_LOCKED = 2;
+  DEPLOYMENT_STATUS_TRIGGERED = 2;
   DEPLOYMENT_STATUS_WAITING = 3;
   DEPLOYMENT_STATUS_AVAILABLE = 4;
   DEPLOYMENT_STATUS_SCALING_DOWN = 5;
@@ -61,17 +66,6 @@ enum DeploymentStatus {
 }
 
 
-message Actor {}
-
-message EventMetadata {
-  string event_id = 1 [
-    (buf.validate.field).string.uuid = true
-  ];
-  google.protobuf.Timestamp timestamp = 2 [
-    (buf.validate.field).required = true
-  ];
-  Actor actor = 3;
-}
 
 message DeploymentEvent {
   EventMetadata metadata = 1;
@@ -105,8 +99,8 @@ enum StackLifecycle {
 
 message DeploymentEventType {
   oneof type {
-    Triggered triggered = 1;
-    GotLock got_lock = 2;
+    Created created = 1;
+    Triggered triggered = 2;
 
     StackCreate stack_create = 3;
 
@@ -126,15 +120,15 @@ message DeploymentEventType {
     Done done = 100;
   }
 
-  message Triggered {
+  message Created {
     DeploymentSpec spec = 1;
   }
 
-  message GotLock { }
+  message Triggered {
+  }
 
   message StackCreate {
   }
-
 
   // Waits for the stack to be ready, without making any changes
   message StackWait {
