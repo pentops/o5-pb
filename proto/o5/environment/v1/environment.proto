@@ -54,6 +54,17 @@ message AWS {
 
   string sns_prefix = 12;
 
+  // Since S3 buckets must be globally unique for all AWS accounts and regions,
+  // buckets are named {name}-{app name}-{region}-{s3_bucket_namespace}
+  string s3_bucket_namespace = 14;
+
+  repeated AWSGrantPrincipal grant_principals = 13;
+
+}
+
+message AWSGrantPrincipal {
+  string name = 1; // maps to application.v1.Grant.principal
+  string role_arn = 2;
 }
 
 message AWSLink {
