@@ -56,7 +56,10 @@ stateDiagram-v2
     SCALING_UP --> FAILED_5 : Stack Failure
 
     SCALED_UP:::auto --> DONE : Done
-	UPSERTING --> DONE
+	UPSERTING --> UPSERTED : Stack Stable
+	UPSERTED:::auto --> DONE : Done
+	UPSERTING_FAILED:::failed : FAILED
+	UPSERTING --> UPSERTING_FAILED : StackStatus.Error
 	DONE --> [*]
 
 ```
