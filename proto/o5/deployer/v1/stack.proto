@@ -26,8 +26,9 @@ enum StackStatus {
   STACK_STATUS_UNSPECIFIED = 0;
   STACK_STATUS_CREATING = 1;
   STACK_STATUS_STABLE = 2;
-  STACK_STATUS_MIGRATING = 3;
-  STACK_STATUS_BROKEN = 4;
+  STACK_STATUS_AVAILABLE = 3;
+  STACK_STATUS_MIGRATING = 4;
+  STACK_STATUS_BROKEN = 5;
 }
 
 message StackDeployment {
@@ -48,6 +49,7 @@ message StackEventType{
     Triggered triggered = 1;
     DeploymentCompleted deployment_completed = 2;
     DeploymentFailed deployment_failed = 3;
+    Available available = 4;
   }
 
   message Triggered {
@@ -61,6 +63,9 @@ message StackEventType{
   message DeploymentFailed {
     StackDeployment deployment = 1;
     string error = 2;
+  }
+
+  message Available {
   }
 
 }

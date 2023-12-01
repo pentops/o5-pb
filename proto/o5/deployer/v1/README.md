@@ -7,16 +7,18 @@ Deployer
 ```mermaid
 stateDiagram-v2
 	classDef error stroke:red,fill:#330000
+    classDef auto stroke:green,fill:#003300
 
 	[*] --> CREATING : Triggered
 	CREATING --> CREATING : Triggered<br>(Adds to the queue)
 	CREATING --> STABLE : DeploymentCompleted
+	STABLE:::auto --> AVAILABLE : DeploymentsCompleted
 	STABLE --> MIGRATING : Triggered<br>(Pops from queue)
-	STABLE --> MIGRATING : Triggered<br>(External)
+	AVAILABLE --> MIGRATING : Triggered<br>(External)
 	MIGRATING --> STABLE : DeploymentCompleted
 	MIGRATING --> MIGRATING : Triggered<br>(Adds to the queue)
-	CREATING --> BROKEN:::error : CreateErrored
-	MIGRATING --> BROKEN : MigrateErrored
+	CREATING --> BROKEN:::error : DeploymentFailed
+	MIGRATING --> BROKEN : DeploymentFailed
 ```
 
 ## Deployment State

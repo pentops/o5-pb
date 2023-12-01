@@ -16,10 +16,11 @@ message DeploymentState {
   string stack_name = 4 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
   string stack_id = 7 [(listify.annotations.v1.rules).string.foreign_key.uuid.filtering.filterable = true];
 
+  optional string waiting_on_remote_phase = 8;
+
+  StackLifecycle last_stack_lifecycle = 9;
+
   repeated KeyValue stack_output = 6;
-
-
-
   repeated DatabaseMigrationState data_migrations = 5;
 }
 
@@ -38,7 +39,7 @@ message DeploymentSpec {
   bool quick_mode = 11 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
 
   repeated PostgresDatabase databases = 5;
-  repeated Parameter parameters = 6;
+  repeated CloudFormationStackParameter parameters = 6;
   repeated SNSTopic sns_topics = 7;
 }
 
@@ -154,8 +155,8 @@ message DeploymentEventType {
     StackLifecycle lifecycle = 1;
     string full_status = 2;
     repeated KeyValue stack_output = 3;
+    string deployment_phase = 4;
   }
-
 
   // Triggers a DB migration of 0 or more databases
   message MigrateData {

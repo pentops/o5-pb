@@ -60,6 +60,8 @@ message AWS {
 
   repeated AWSGrantPrincipal grant_principals = 13;
 
+  string region = 15;
+
 }
 
 message AWSGrantPrincipal {
