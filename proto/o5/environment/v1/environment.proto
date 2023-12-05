@@ -62,6 +62,8 @@ message AWS {
 
   string region = 15;
 
+  optional string sidecar_image_version = 16; // defaults to latest
+  optional string sidecar_image_repo = 17; // defaults to ghcr.io/pentops/o5-runtime-sidecar
 }
 
 message AWSGrantPrincipal {
