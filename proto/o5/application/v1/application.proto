@@ -12,17 +12,14 @@ message Application {
     (buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$"
   ];
 
-  //repeated string sub_environments = 2;
-
   repeated Target targets = 4;
-
-
   repeated Blobstore blobstores = 7;
   repeated Database databases = 8;
   repeated Runtime runtimes = 9;
   repeated Secret secrets = 10;
 
   DeploymentConfig deployment_config = 11;
+
 }
 
 message DeploymentConfig {
