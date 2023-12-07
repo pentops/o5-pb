@@ -105,8 +105,12 @@ enum StackLifecycle {
   // Create failure, rolled back to nothing
   STACK_LIFECYCLE_CREATE_FAILED = 4;
 
-  // Update failure, rolled back to previous version
+  // Update or create failure
   STACK_LIFECYCLE_TERMINAL = 5;
+
+  // Update failure, rolled back to previous version and now stable.
+  // Good when waiting, bad when updating or scaling.
+  STACK_LIFECYCLE_ROLLED_BACK = 7;
 
   // Missing, not present currently, either never created or deleted, not not
   // 'rolled back'
