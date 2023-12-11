@@ -20,6 +20,11 @@ message Application {
 
   DeploymentConfig deployment_config = 11;
 
+
+  // Only valid when deployed onto AWS, this should be used only for
+  // infrastructure adapters, e.g. a service which sends emails using SES, the
+  // o5 deployer itself, dante etc.
+  AWSConfig aws_config = 12;
 }
 
 message DeploymentConfig {
@@ -219,4 +224,14 @@ message SecretEnvVar {
 
 message Secret {
   string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+}
+
+message AWSConfig {
+
+  SES ses = 1;
+
+  message SES {
+    bool send_email = 1;
+  }
+
 }
