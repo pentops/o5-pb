@@ -13,9 +13,7 @@ option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_spb";
 
 service DeploymentQueryService {
   rpc GetDeployment(GetDeploymentRequest) returns (GetDeploymentResponse) {
-    option (google.api.http) = {
-      get: "/deployer/v1/deployment/{deployment_id}"
-    };
+    option (google.api.http) = {get: "/deployer/v1/q/deployment/{deployment_id}"};
     option (psm.v1.state_query_method) = {
       name: "deployment"
       get: true
@@ -24,7 +22,7 @@ service DeploymentQueryService {
 
   rpc ListDeploymentEvents(ListDeploymentEventsRequest) returns (ListDeploymentEventsResponse) {
     option (google.api.http) = {
-      post: "/deployer/v1/deployment/{deployment_id}/events"
+      post: "/deployer/v1/q/deployment/{deployment_id}/events"
       body: "*"
     };
     option (psm.v1.state_query_method) = {
@@ -35,7 +33,7 @@ service DeploymentQueryService {
 
   rpc ListDeployments(ListDeploymentsRequest) returns (ListDeploymentsResponse) {
     option (google.api.http) = {
-      post: "/deployer/v1/deployments"
+      post: "/deployer/v1/q/deployments"
       body: "*"
     };
     option (psm.v1.state_query_method) = {
@@ -45,9 +43,7 @@ service DeploymentQueryService {
   }
 
   rpc GetStack(GetStackRequest) returns (GetStackResponse) {
-    option (google.api.http) = {
-      get: "/deployer/v1/stack/{stack_id}"
-    };
+    option (google.api.http) = {get: "/deployer/v1/q/stack/{stack_id}"};
     option (psm.v1.state_query_method) = {
       name: "stack"
       get: true
@@ -56,7 +52,7 @@ service DeploymentQueryService {
 
   rpc ListStacks(ListStacksRequest) returns (ListStacksResponse) {
     option (google.api.http) = {
-      post: "/deployer/v1/stacks"
+      post: "/deployer/v1/q/stacks"
       body: "*"
     };
     option (psm.v1.state_query_method) = {
@@ -67,7 +63,7 @@ service DeploymentQueryService {
 
   rpc ListStackEvents(ListStackEventsRequest) returns (ListStackEventsResponse) {
     option (google.api.http) = {
-      post: "/deployer/v1/stack/{stack_id}/events"
+      post: "/deployer/v1/q/stack/{stack_id}/events"
       body: "*"
     };
     option (psm.v1.state_query_method) = {
@@ -89,9 +85,9 @@ message GetDeploymentResponse {
 message ListDeploymentEventsRequest {
   string deployment_id = 1;
 
-  listify.query.v1.PageRequest     page    = 100;
-  listify.query.v1.Search          search  = 101;
-  repeated listify.query.v1.Sort   sorts   = 102;
+  listify.query.v1.PageRequest page = 100;
+  listify.query.v1.Search search = 101;
+  repeated listify.query.v1.Sort sorts = 102;
   repeated listify.query.v1.Filter filters = 103;
 }
 
@@ -102,9 +98,9 @@ message ListDeploymentEventsResponse {
 }
 
 message ListDeploymentsRequest {
-  listify.query.v1.PageRequest     page    = 100;
-  listify.query.v1.Search          search  = 101;
-  repeated listify.query.v1.Sort   sorts   = 102;
+  listify.query.v1.PageRequest page = 100;
+  listify.query.v1.Search search = 101;
+  repeated listify.query.v1.Sort sorts = 102;
   repeated listify.query.v1.Filter filters = 103;
 }
 
@@ -124,9 +120,9 @@ message GetStackResponse {
 }
 
 message ListStacksRequest {
-  listify.query.v1.PageRequest     page    = 100;
-  listify.query.v1.Search          search  = 101;
-  repeated listify.query.v1.Sort   sorts   = 102;
+  listify.query.v1.PageRequest page = 100;
+  listify.query.v1.Search search = 101;
+  repeated listify.query.v1.Sort sorts = 102;
   repeated listify.query.v1.Filter filters = 103;
 }
 
@@ -139,9 +135,9 @@ message ListStacksResponse {
 message ListStackEventsRequest {
   string stack_id = 1;
 
-  listify.query.v1.PageRequest     page    = 100;
-  listify.query.v1.Search          search  = 101;
-  repeated listify.query.v1.Sort   sorts   = 102;
+  listify.query.v1.PageRequest page = 100;
+  listify.query.v1.Search search = 101;
+  repeated listify.query.v1.Sort sorts = 102;
   repeated listify.query.v1.Filter filters = 103;
 }
 
@@ -150,4 +146,3 @@ message ListStackEventsResponse {
 
   listify.query.v1.PageResponse page = 100;
 }
-
