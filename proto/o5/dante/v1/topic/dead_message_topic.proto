@@ -18,5 +18,5 @@ service DeadMessageTopic {
 }
 
 message DeadMessage {
-  o5.dante.v1.DeadMessage dead = 1;
+  o5.dante.v1.DeadMessageState dead = 1;
 }

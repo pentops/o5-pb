@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "o5/dante/v1/dead_message.proto";
+
+package o5.dante.v1.service;
+
+option go_package = "github.com/pentops/o5-go/dante/v1/dante_spb";
+
+service DeadMessageQueryService {
+  rpc GetDeadMessage(GetDeadMessageRequest) returns (GetDeadMessageResponse) {
+    option (google.api.http) = {get: "/dante/v1/q/message/{message_id}"};
+  }
+
+  rpc ListDeadMessages(ListDeadMessagesRequest) returns (ListDeadMessagesResponse) {
+    option (google.api.http) = {get: "/dante/v1/q/messages"};
+  }
+
+  rpc ListDeadMessageEvents(ListDeadMessageEventsRequest) returns (ListDeadMessageEventsResponse) {
+    option (google.api.http) = {get: "/dante/v1/q/message/{message_id}/events"};
+  }
+}
+
+message GetDeadMessageRequest {
+  // when not set, returns the next unhandled message
+  optional string message_id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
+
+}
+
+message GetDeadMessageResponse {
+  o5.dante.v1.DeadMessageState message = 1 [(buf.validate.field).required = true];
+  repeated o5.dante.v1.DeadMessageEvent events = 2;
+}
+
+message ListDeadMessagesRequest {
+  // TODO: Filters
+  // TODO: Paging
+}
+
+message ListDeadMessagesResponse {
+  repeated o5.dante.v1.DeadMessageState messages = 1;
+
+  // TODO: Paging
+}
+
+message ListDeadMessageEventsRequest {
+  string message_id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
+}
+
+message ListDeadMessageEventsResponse {
+  repeated o5.dante.v1.DeadMessageEvent events = 1;
+}
