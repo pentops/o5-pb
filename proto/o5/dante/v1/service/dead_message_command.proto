@@ -23,7 +23,7 @@ service DeadMessageCommandService {
     };
   }
 
-  rpc ShelveDeadMessage(ShelveDeadMessageRequest) returns (ShelveDeadMessageResponse) {
+  rpc RejectDeadMessage(RejectDeadMessageRequest) returns (RejectDeadMessageResponse) {
     option (google.api.http) = {
       post: "/dante/v1/c/messages/{message_id}/shelve"
       body: "*"
@@ -57,12 +57,14 @@ message ReplayDeadMessageResponse {
   o5.dante.v1.DeadMessageState message = 1 [(buf.validate.field).required = true];
 }
 
-message ShelveDeadMessageRequest {
+message RejectDeadMessageRequest {
   string message_id = 1 [
     (buf.validate.field).string.uuid = true
   ];
+
+  string reason = 2;
 }
 
-message ShelveDeadMessageResponse {
+message RejectDeadMessageResponse {
   o5.dante.v1.DeadMessageState message = 1 [(buf.validate.field).required = true];
 }
