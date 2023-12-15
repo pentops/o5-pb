@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package o5.dante.v1.topic;
 
+import "buf/validate/validate.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 import "o5/dante/v1/dead_message.proto";
 import "o5/messaging/v1/annotations.proto";
 
@@ -18,5 +20,20 @@ service DeadMessageTopic {
 }
 
 message DeadMessage {
-  o5.dante.v1.DeadMessageState dead = 1;
+  string message_id = 1 [(buf.validate.field).string.uuid = true];
+
+  // The ID used by the underlying messaging infra, can be any format
+  string infra_message_id = 2;
+
+  string queue_name = 3;
+  string grpc_name = 4;
+
+  google.protobuf.Timestamp timestamp = 5;
+
+  Any payload = 6;
+
+  oneof problem {
+    InvariantViolation invariant_violation = 10;
+    UnhandledError unhandled_error = 11;
+  }
 }
