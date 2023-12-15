@@ -29,7 +29,7 @@ message DeadMessageSpec {
   string infra_message_id = 2;
 
   string queue_name = 3;
-  string grpc_name  = 4;
+  string grpc_name = 4;
 
   google.protobuf.Timestamp created_at = 5;
 
@@ -37,7 +37,7 @@ message DeadMessageSpec {
 
   oneof problem {
     InvariantViolation invariant_violation = 10;
-    UnhandledError     unhandled_error     = 11;
+    UnhandledError unhandled_error = 11;
   }
 }
 
@@ -51,15 +51,15 @@ enum MessageStatus {
 
 enum Urgency {
   URGENCY_UNSPECIFIED = 0;
-  URGENCY_LOW         = 1;
-  URGENCY_MEDIUM      = 2;
-  URGENCY_HIGH        = 3;
+  URGENCY_LOW = 1;
+  URGENCY_MEDIUM = 2;
+  URGENCY_HIGH = 3;
 }
 
 message InvariantViolation {
-  string  description = 1;
-  Any     error       = 2;
-  Urgency urgency     = 3;
+  string description = 1;
+  Any error = 2;
+  Urgency urgency = 3;
 }
 
 message UnhandledError {
