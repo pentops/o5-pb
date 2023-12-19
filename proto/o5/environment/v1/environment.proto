@@ -15,7 +15,10 @@ message Environment {
 
   repeated CustomVariable vars = 2;
 
-
+  // allowed cors origins, with wildcard support, e.g. https://*.example.com
+  // other cors settings are implicit, or set via proto extensions in the
+  // endpoints
+  repeated string cors_origins = 4;
 }
 
 message CustomVariable {
@@ -30,7 +33,6 @@ message CustomVariable {
     repeated string values = 2;
   }
 }
-
 
 message AWS {
   string listener_arn = 1;
@@ -71,7 +73,6 @@ message AWS {
 }
 
 message SESIdentity {
-
   // use [*] for any, or [*.example.com] to restrict a domain.
   // Empty array means no permissions
   repeated string senders = 18;
