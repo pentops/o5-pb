@@ -9,9 +9,10 @@ option go_package = "github.com/pentops/o5-go/messaging/v1/messaging_tpb";
 // RawMessage is an adapter to allow services to receive non-typed messages,
 // e.g. AWS infrastructure events.
 service RawMessageTopic {
-  rpc Raw (RawMessage) returns (google.protobuf.Empty) {}
+  rpc Raw(RawMessage) returns (google.protobuf.Empty) {}
 }
 
 message RawMessage {
+  string topic = 2;
   bytes payload = 1;
 }
