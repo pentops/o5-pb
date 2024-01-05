@@ -3,8 +3,8 @@ syntax = "proto3";
 package o5.deployer.v1.service;
 
 import "google/api/annotations.proto";
-import "listify/query/v1/page.proto";
-import "listify/query/v1/query.proto";
+import "psm/list/v1/page.proto";
+import "psm/list/v1/query.proto";
 import "o5/deployer/v1/deployment.proto";
 import "o5/deployer/v1/stack.proto";
 import "psm/v1/annotations.proto";
