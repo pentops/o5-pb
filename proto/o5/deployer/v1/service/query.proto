@@ -85,29 +85,29 @@ message GetDeploymentResponse {
 message ListDeploymentEventsRequest {
   string deployment_id = 1;
 
-  listify.query.v1.PageRequest page = 100;
-  listify.query.v1.Search search = 101;
-  repeated listify.query.v1.Sort sorts = 102;
-  repeated listify.query.v1.Filter filters = 103;
+  psm.list.v1.PageRequest page = 100;
+  psm.list.v1.Search search = 101;
+  repeated psm.list.v1.Sort sorts = 102;
+  repeated psm.list.v1.Filter filters = 103;
 }
 
 message ListDeploymentEventsResponse {
   repeated o5.deployer.v1.DeploymentEvent events = 1;
 
-  listify.query.v1.PageResponse page = 100;
+  psm.list.v1.PageResponse page = 100;
 }
 
 message ListDeploymentsRequest {
-  listify.query.v1.PageRequest page = 100;
-  listify.query.v1.Search search = 101;
-  repeated listify.query.v1.Sort sorts = 102;
-  repeated listify.query.v1.Filter filters = 103;
+  psm.list.v1.PageRequest page = 100;
+  psm.list.v1.Search search = 101;
+  repeated psm.list.v1.Sort sorts = 102;
+  repeated psm.list.v1.Filter filters = 103;
 }
 
 message ListDeploymentsResponse {
   repeated o5.deployer.v1.DeploymentState deployments = 1;
 
-  listify.query.v1.PageResponse page = 100;
+  psm.list.v1.PageResponse page = 100;
 }
 
 message GetStackRequest {
@@ -120,29 +120,29 @@ message GetStackResponse {
 }
 
 message ListStacksRequest {
-  listify.query.v1.PageRequest page = 100;
-  listify.query.v1.Search search = 101;
-  repeated listify.query.v1.Sort sorts = 102;
-  repeated listify.query.v1.Filter filters = 103;
+  psm.list.v1.PageRequest page = 100;
+  psm.list.v1.Search search = 101;
+  repeated psm.list.v1.Sort sorts = 102;
+  repeated psm.list.v1.Filter filters = 103;
 }
 
 message ListStacksResponse {
   repeated o5.deployer.v1.StackState stacks = 1;
 
-  listify.query.v1.PageResponse page = 100;
+  psm.list.v1.PageResponse page = 100;
 }
 
 message ListStackEventsRequest {
   string stack_id = 1;
 
-  listify.query.v1.PageRequest page = 100;
-  listify.query.v1.Search search = 101;
-  repeated listify.query.v1.Sort sorts = 102;
-  repeated listify.query.v1.Filter filters = 103;
+  psm.list.v1.PageRequest page = 100;
+  psm.list.v1.Search search = 101;
+  repeated psm.list.v1.Sort sorts = 102;
+  repeated psm.list.v1.Filter filters = 103;
 }
 
 message ListStackEventsResponse {
   repeated o5.deployer.v1.StackEvent events = 1;
 
-  listify.query.v1.PageResponse page = 100;
+  psm.list.v1.PageResponse page = 100;
 }
