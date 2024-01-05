@@ -31,9 +31,5 @@ message DeadMessage {
   google.protobuf.Timestamp timestamp = 5;
 
   Any payload = 6;
-
-  oneof problem {
-    InvariantViolation invariant_violation = 10;
-    UnhandledError unhandled_error = 11;
-  }
+  Problem problem = 8;
 }
