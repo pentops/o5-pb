@@ -32,10 +32,13 @@ message DeadMessageSpec {
   google.protobuf.Timestamp created_at = 5;
 
   Any payload = 7;
+  Problem problem = 8;
+}
 
-  oneof problem {
-    InvariantViolation invariant_violation = 10;
-    UnhandledError unhandled_error = 11;
+message Problem {
+  oneof type {
+    InvariantViolation invariant_violation = 1;
+    UnhandledError unhandled_error = 2;
   }
 }
 
