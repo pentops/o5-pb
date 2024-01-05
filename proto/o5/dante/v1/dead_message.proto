@@ -6,7 +6,7 @@ import "buf/validate/validate.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
 import "o5/auth/v1/actor.proto";
-import "psm/v1/annotations.proto";
+import "psm/state/v1/annotations.proto";
 
 option go_package = "github.com/pentops/o5-go/dante/v1/dante_pb";
 
@@ -73,16 +73,16 @@ message Any {
 message DeadMessageEvent {
   Metadata metadata = 1 [
     (buf.validate.field).required = true,
-    (psm.v1.event_field).metadata = true
+    (psm.state.v1.event_field).metadata = true
   ];
 
   string message_id = 2 [
     (buf.validate.field).string.uuid = true,
-    (psm.v1.event_field).state_key = true
+    (psm.state.v1.event_field).state_key = true
   ];
 
   DeadMessageEventType event = 3 [
-    (psm.v1.event_field).event_type = true
+    (psm.state.v1.event_field).event_type = true
   ];
 }
 
