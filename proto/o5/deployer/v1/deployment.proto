@@ -11,14 +11,14 @@ import "buf/validate/validate.proto";
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
 
 message DeploymentState {
-  option (psm.v1.state).name = "deployment";
+  option (psm.state.v1.state).name = "deployment";
 
   string deployment_id = 1;
-  DeploymentStatus status = 2 [(listify.annotations.v1.rules).enum.filtering = { filterable: true }];
+  DeploymentStatus status = 2 [(psm.list.v1.field).enum.filtering = { filterable: true }];
   DeploymentSpec spec = 3;
 
-  string stack_name = 4 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
-  string stack_id = 7 [(listify.annotations.v1.rules).string.foreign_key.uuid.filtering.filterable = true];
+  string stack_name = 4 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string stack_id = 7 [(psm.list.v1.field).string.foreign_key.uuid.filtering.filterable = true];
 
   optional string waiting_on_remote_phase = 8;
 
@@ -29,18 +29,18 @@ message DeploymentState {
 }
 
 message DeploymentSpec {
-  string app_name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
-  string version = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
-  string environment_name = 3 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
-  string template_url = 4 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string app_name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string version = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string environment_name = 3 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string template_url = 4 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
 
-  bool cancel_updates = 8 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
-  bool rotate_credentials = 9 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
-  string ecs_cluster = 10 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  bool cancel_updates = 8 [(psm.list.v1.field).bool.filtering.filterable = true];
+  bool rotate_credentials = 9 [(psm.list.v1.field).bool.filtering.filterable = true];
+  string ecs_cluster = 10 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
   // Skips scale up/down, directly applying the updates in one infra call.
-  bool quick_mode = 11 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
+  bool quick_mode = 11 [(psm.list.v1.field).bool.filtering.filterable = true];
 
   repeated PostgresDatabase databases = 5;
   repeated CloudFormationStackParameter parameters = 6;
@@ -73,19 +73,19 @@ enum DeploymentStatus {
 
 
 message DeploymentEvent {
-  option (psm.v1.event).name = "deployment";
+  option (psm.state.v1.event).name = "deployment";
   EventMetadata metadata = 1 [
-    (psm.v1.event_field).metadata = true,
+    (psm.state.v1.event_field).metadata = true,
     (buf.validate.field).required = true
   ];
 
   string deployment_id = 2 [
-    (psm.v1.event_field).state_key = true,
+    (psm.state.v1.event_field).state_key = true,
     (buf.validate.field).string.uuid = true
   ];
 
   DeploymentEventType event = 3 [
-    (psm.v1.event_field).event_type = true,
+    (psm.state.v1.event_field).event_type = true,
     (buf.validate.field).required = true
   ];
 }
@@ -208,10 +208,10 @@ message DatabaseMigration {
 }
 
 message DatabaseMigrationState {
-  string migration_id = 1 [(listify.annotations.v1.rules).string.foreign_key.uuid.filtering.filterable = true];
-  string db_name = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
-  bool rotate_credentials = 3 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
-  DatabaseMigrationStatus status = 4 [(listify.annotations.v1.rules).enum.filtering = { filterable: true }];
+  string migration_id = 1 [(psm.list.v1.field).string.foreign_key.uuid.filtering.filterable = true];
+  string db_name = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  bool rotate_credentials = 3 [(psm.list.v1.field).bool.filtering.filterable = true];
+  DatabaseMigrationStatus status = 4 [(psm.list.v1.field).enum.filtering = { filterable: true }];
 }
 
 enum DatabaseMigrationStatus {

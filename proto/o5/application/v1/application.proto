@@ -45,10 +45,10 @@ message Grant {
 }
 
 message Database {
-  string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
   oneof engine {
-    option (listify.annotations.v1.oneof_rules).filtering.filterable = true;
+    option (psm.list.v1.oneof).filtering.filterable = true;
 
     Postgres postgres = 10;
   }
@@ -56,17 +56,17 @@ message Database {
   message Postgres {
     // The name of the database within the postgres instance, default is the
     // name in the parent message
-    string db_name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+    string db_name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
     // default is 'default' - identifies which database server from the
     // environment config this belongs with
-    string server_group = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+    string server_group = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
-    repeated string db_extensions = 3 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+    repeated string db_extensions = 3 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
     Container migrate_container = 4;
 
-    bool run_outbox = 5 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
+    bool run_outbox = 5 [(psm.list.v1.field).bool.filtering.filterable = true];
   }
 }
 
@@ -133,41 +133,41 @@ enum Demand {
 }
 
 message Container {
-  string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
   oneof source {
-    option (listify.annotations.v1.oneof_rules).filtering.filterable = true;
+    option (psm.list.v1.oneof).filtering.filterable = true;
 
     string image_url = 2;
     Image image = 3;
   }
 
-  repeated string command = 4 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  repeated string command = 4 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
   message Image {
-    string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+    string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
     // Defaults to the full git hash being deployed (or passed in --version
     // parameter)
-    optional string tag = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+    optional string tag = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
     // Defaults to the environment's registry, set here to override
-    optional string registry = 3 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+    optional string registry = 3 [(psm.list.v1.field).string.open_text.searching.searchable = true];
   }
 
   // The amount of Memory and CPU to allocate to the container
-  Demand demand = 5 [(listify.annotations.v1.rules).enum.filtering = {filterable: true}];
+  Demand demand = 5 [(psm.list.v1.field).enum.filtering = {filterable: true}];
 
   repeated EnvironmentVariable env_vars = 6;
 }
 
 message EnvironmentVariable {
-  string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
   oneof spec {
-    option (listify.annotations.v1.oneof_rules).filtering.filterable = true;
+    option (psm.list.v1.oneof).filtering.filterable = true;
 
-    string value = 9 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+    string value = 9 [(psm.list.v1.field).string.open_text.searching.searchable = true];
     DatabaseEnvVar database = 10;
     BlobstoreEnvVar blobstore = 11;
     MapEnvVar env_map = 12;
@@ -178,37 +178,37 @@ message EnvironmentVariable {
 
 message DatabaseEnvVar {
   // references a database in the top level array
-  string database_name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string database_name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
   // TODO: Formats. Default is a full URI which might do.
 }
 
 message BlobstoreEnvVar {
-  string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
-  optional string sub_path = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  optional string sub_path = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
   oneof format {
-    option (listify.annotations.v1.oneof_rules).filtering.filterable = true;
+    option (psm.list.v1.oneof).filtering.filterable = true;
 
     // Sets the variable as s3://<bucket>/<?sub_path>
     // TODO: Deprecate this and build a wrapper through the sidecar
-    bool s3_direct = 10 [(listify.annotations.v1.rules).bool.filtering.filterable = true];
+    bool s3_direct = 10 [(psm.list.v1.field).bool.filtering.filterable = true];
   }
 }
 
 message MapEnvVar {}
 
 message FromEnvVar {
-  string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 }
 
 message SecretEnvVar {
-  string secret_name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
-  string json_key = 2 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string secret_name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string json_key = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 }
 
 message Secret {
-  string name = 1 [(listify.annotations.v1.rules).string.open_text.searching.searchable = true];
+  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 }
 
 message AWSConfig {
