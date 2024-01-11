@@ -159,6 +159,9 @@ message Container {
   Demand demand = 5 [(psm.list.v1.field).enum.filtering = {filterable: true}];
 
   repeated EnvironmentVariable env_vars = 6;
+
+  // gives access to /var/run/docker.sock in the container
+  bool mount_docker_socket = 7;
 }
 
 message EnvironmentVariable {
