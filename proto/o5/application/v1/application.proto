@@ -176,6 +176,7 @@ message EnvironmentVariable {
     MapEnvVar env_map = 12;
     FromEnvVar from_env = 13;
     SecretEnvVar secret = 14;
+    O5Var o5 = 15;
   }
 }
 
@@ -220,4 +221,11 @@ message AWSConfig {
   message SES {
     bool send_email = 1;
   }
+}
+
+enum O5Var {
+  O5_VAR_UNSPECIFIED = 0;
+
+  // address of the sidecar / adapter for gRPC dial
+  O5_VAR_ADAPTER_ENDPOINT = 1;
 }
