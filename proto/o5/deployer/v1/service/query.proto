@@ -5,6 +5,7 @@ package o5.deployer.v1.service;
 import "google/api/annotations.proto";
 import "o5/deployer/v1/deployment.proto";
 import "o5/deployer/v1/stack.proto";
+import "psm/list/v1/annotations.proto";
 import "psm/list/v1/page.proto";
 import "psm/list/v1/query.proto";
 import "psm/state/v1/annotations.proto";
@@ -85,7 +86,7 @@ message GetDeploymentResponse {
 message ListDeploymentEventsRequest {
   string deployment_id = 1;
 
-  psm.list.v1.PageRequest  page  = 100;
+  psm.list.v1.PageRequest page = 100;
   psm.list.v1.QueryRequest query = 101;
 }
 
@@ -96,8 +97,11 @@ message ListDeploymentEventsResponse {
 }
 
 message ListDeploymentsRequest {
-  psm.list.v1.PageRequest  page  = 100;
+  psm.list.v1.PageRequest page = 100;
   psm.list.v1.QueryRequest query = 101;
+  option (psm.list.v1.list_request) = {
+    sort_tiebreaker: ["deployment_id"]
+  };
 }
 
 message ListDeploymentsResponse {
@@ -116,8 +120,11 @@ message GetStackResponse {
 }
 
 message ListStacksRequest {
-  psm.list.v1.PageRequest  page  = 100;
+  psm.list.v1.PageRequest page = 100;
   psm.list.v1.QueryRequest query = 101;
+  option (psm.list.v1.list_request) = {
+    sort_tiebreaker: ["stack_id"]
+  };
 }
 
 message ListStacksResponse {
@@ -129,7 +136,7 @@ message ListStacksResponse {
 message ListStackEventsRequest {
   string stack_id = 1;
 
-  psm.list.v1.PageRequest  page  = 100;
+  psm.list.v1.PageRequest page = 100;
   psm.list.v1.QueryRequest query = 101;
 }
 
