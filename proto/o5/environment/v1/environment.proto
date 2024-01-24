@@ -48,7 +48,9 @@ message AWS {
   // assume, when grant_meta_deploy_permissions is set in the application config
   repeated string o5_deployer_grant_roles = 10;
 
-  // when set, adds a host header rule exactly as defined to all listener rules.
+  // when set, adds a host header rule to all listener rules. For routes with
+  // specified subdomains, the subdomain value is added as a prefix to this
+  // value.
   // This allows re-use of the same listener for multiple (related) environments.
   optional string host_header = 6;
 
