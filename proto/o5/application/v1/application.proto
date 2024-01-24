@@ -101,6 +101,10 @@ message Route {
   // Default is not to filter, but requires the route_group to be FALLBACK
   string prefix = 1;
 
+  // For envifonments which support subdomains, this becomes the prefix on the
+  // domain filter. Wildcards are supported.
+  repeated string subdomains = 7;
+
   RouteProtocol protocol = 2 [(buf.validate.field).enum = {
     defined_only: true
     not_in: [0]
