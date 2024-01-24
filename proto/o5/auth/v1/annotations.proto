@@ -6,9 +6,13 @@ import "google/protobuf/descriptor.proto";
 
 option go_package = "github.com/pentops/o5-go/auth/v1/auth_pb";
 
-
 extend google.protobuf.MethodOptions {
   AuthMethodOptions auth = 58960757;
+}
+
+extend google.protobuf.ServiceOptions {
+  // Default
+  AuthMethodOptions default_auth = 58960757;
 }
 
 message AuthMethodOptions {

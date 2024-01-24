@@ -1,0 +1,17 @@
+---
+registry:
+  organization: pentops
+  name: o5
+
+packages:
+  - label: Deployer
+    name: o5.deployer.v1
+options:
+  trimSubPackages:
+    - service
+    - topic
+  wrapOneof: true
+  shortEnums:
+    unspecifiedSuffix: UNSPECIFIED
+    strictUnmarshal: true
+
