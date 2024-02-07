@@ -225,6 +225,9 @@ message AWSConfig {
   message SES {
     bool send_email = 1;
   }
+
+  // Dante can publish to any queue for message replays
+  bool sqs_publish_anywhere = 2;
 }
 
 enum O5Var {
