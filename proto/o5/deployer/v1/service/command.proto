@@ -18,6 +18,10 @@ service DeploymentCommandService {
       body: "*"
     };
   }
+
+  rpc TerminateDeployment(TerminateDeploymentRequest) returns (TerminateDeploymentResponse) {
+    option (google.api.http) = {delete: "/deployer/v1/c/deployments/{deployment_id}"};
+  }
 }
 
 message TriggerDeploymentRequest {
@@ -37,3 +41,9 @@ message TriggerDeploymentRequest {
 }
 
 message TriggerDeploymentResponse {}
+
+message TerminateDeploymentRequest {
+  string deployment_id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message TerminateDeploymentResponse {}
