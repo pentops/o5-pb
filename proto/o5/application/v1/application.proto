@@ -225,6 +225,12 @@ message AWSConfig {
   message SES {
     bool send_email = 1;
   }
+
+  SQSPublishAnywhere sqs_publish_anywhere = 2;
+
+  message SQSPublishAnywhere {
+    bool send_anywhere = 1;
+  }
 }
 
 enum O5Var {
