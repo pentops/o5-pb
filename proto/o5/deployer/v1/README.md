@@ -12,8 +12,10 @@ stateDiagram-v2
 	[*] --> CREATING : Triggered
 	CREATING --> CREATING : Triggered<br>(Adds to the queue)
 	CREATING --> STABLE : DeploymentCompleted
-	STABLE:::auto --> AVAILABLE : DeploymentsCompleted
-	STABLE --> MIGRATING : Triggered<br>(Pops from queue)
+	state stable <<choice>>
+	STABLE:::auto --> stable
+	stable --> AVAILABLE : Nothing Queued
+	stable --> MIGRATING : Pops from queue
 	AVAILABLE --> MIGRATING : Triggered<br>(External)
 	MIGRATING --> STABLE : DeploymentCompleted
 	MIGRATING --> MIGRATING : Triggered<br>(Adds to the queue)
