@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package o5.deployer.v1;
+
+import "buf/validate/validate.proto";
+import "o5/deployer/v1/application.proto";
+import "o5/deployer/v1/event.proto";
+import "psm/state/v1/annotations.proto";
+
+option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
+
+message PostgresMigrationState {
+  option (psm.state.v1.state).name = "postgres_migration";
+
+  string migration_id = 1;
+  string deployment_id = 2;
+
+  PostgresMigrationStatus status = 3;
+
+  PostgresMigrationSpec spec = 4;
+
+  // flag for when the migration is unblocked prior to waiting
+  bool unblocked = 5;
+}
+
+message PostgresMigrationSpec {
+  PostgresDatabase database = 3;
+  bool rotate_credentials = 4;
+  string migration_task_arn = 5;
+  string secret_arn = 6;
+  string root_secret_name = 7;
+  string ecs_cluster_name = 8;
+}
+
+enum PostgresMigrationStatus {
+  POSTGRES_MIGRATION_STATUS_UNSPECIFIED = 0;
+  POSTGRES_MIGRATION_STATUS_UPSERTING = 1;
+  POSTGRES_MIGRATION_STATUS_READY = 2;
+  POSTGRES_MIGRATION_STATUS_EVALUATING = 3;
+  POSTGRES_MIGRATION_STATUS_EVALUATED = 4;
+  POSTGRES_MIGRATION_STATUS_BLOCKED = 5;
+  POSTGRES_MIGRATION_STATUS_TRIGGERED = 6;
+  POSTGRES_MIGRATION_STATUS_RUNNING = 7;
+  POSTGRES_MIGRATION_STATUS_MIGRATED = 8;
+  POSTGRES_MIGRATION_STATUS_CLEANING_UP = 9;
+  POSTGRES_MIGRATION_STATUS_CLEANED_UP = 10;
+  POSTGRES_MIGRATION_STATUS_DONE = 11;
+  POSTGRES_MIGRATION_STATUS_NOP = 12;
+  POSTGRES_MIGRATION_STATUS_FAILED = 13;
+}
+
+message PostgresMigrationEvent {
+  option (psm.state.v1.event).name = "postgres_migration";
+  EventMetadata metadata = 1 [
+    (psm.state.v1.event_field).metadata = true,
+    (buf.validate.field).required = true
+  ];
+  string migration_id = 2 [
+    (psm.state.v1.event_field).state_key = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  string deployment_id = 3 [
+    (psm.state.v1.event_field).state_key = true,
+    (buf.validate.field).string.uuid = true
+  ];
+
+  PostgresMigrationEventType event = 4 [
+    (psm.state.v1.event_field).event_type = true,
+    (buf.validate.field).required = true
+  ];
+}
+
+message PostgresMigrationEventType {
+  oneof type {
+    Error error = 1;
+
+    Prepare prepare = 2;
+    Unblocked unblocked = 3;
+    UpsertDone upsert_done = 4;
+    EvaluateRun evaluate_run = 5;
+    EvaluateOutcome evaluate_outcome = 6;
+    NoChanges no_changes = 7;
+    NeedsMigrate needs_migrate = 8;
+    MigrateRun migrate_run = 9;
+    MigrateDone migrate_done = 10;
+    CleanupRun cleanup_run = 11;
+    CleanupDone cleanup_done = 12;
+    Done done = 13;
+  }
+
+  message Error {
+    string stage = 1;
+    string error = 2;
+  }
+
+  message Prepare {
+    PostgresMigrationSpec spec = 1;
+  }
+
+  message Unblocked {
+    bool pre_existing = 1;
+  }
+
+  message UpsertDone {}
+
+  message EvaluateRun {
+    string task_id = 1;
+  }
+
+  message EvaluateOutcome {
+    bool no_changes = 1;
+  }
+
+  message NoChanges {}
+
+  message NeedsMigrate {
+    bool skipped_evaluation = 1;
+  }
+
+  message MigrateRun {
+    string task_id = 1;
+  }
+
+  message MigrateDone {
+    string task_id = 1;
+  }
+
+  message CleanupRun {}
+
+  message CleanupDone {}
+
+  message Done {}
+}

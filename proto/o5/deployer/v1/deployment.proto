@@ -5,6 +5,7 @@ package o5.deployer.v1;
 import "buf/validate/validate.proto";
 import "o5/deployer/v1/application.proto";
 import "o5/deployer/v1/event.proto";
+import "o5/deployer/v1/stack.proto";
 import "psm/list/v1/annotations.proto";
 import "psm/state/v1/annotations.proto";
 
@@ -26,20 +27,70 @@ message DeploymentState {
 
   repeated KeyValue stack_output = 6;
   repeated DatabaseMigrationState data_migrations = 5;
+
+  repeated DeploymentStep steps = 10;
+}
+
+message DeploymentStep {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string name = 2;
+  StepStatus status = 3;
+  StepType type = 4;
+  optional string error = 5;
+  repeated string depends_on = 6;
+}
+
+enum StepStatus {
+  STEP_STATUS_UNSPECIFIED = 0;
+  STEP_STATUS_BLOCKED = 1;
+  STEP_STATUS_ACTIVE = 2;
+  STEP_STATUS_DONE = 3;
+  STEP_STATUS_FAILED = 4;
+}
+
+message StepType {
+  oneof type {
+    CFUpsert cf_upsert = 1;
+    CFScale cf_scale = 2;
+    PGUpsert pg_upsert = 6;
+    PGCleanup pg_cleanup = 7;
+    PGMigrate pg_migrate = 8;
+  }
+
+  message CFUpsert {
+    string stack_name = 1;
+    string template_url = 2;
+  }
+  message CFScale {
+    string stack_name = 1;
+    int32 desired_count = 2;
+  }
+  message PGUpsert {
+    string db_name = 1;
+    bool rotate_credentials = 2;
+  }
+  message PGCleanup {}
+  message PGMigrate {}
+}
+
+message StepContext {
+  string deployment_id = 1;
+  int32 step_id = 2;
 }
 
 message DeploymentSpec {
   string app_name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
   string version = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
   string environment_name = 3 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string environment_id = 9 [(buf.validate.field).string.uuid = true];
   string template_url = 4 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
   bool cancel_updates = 8 [(psm.list.v1.field).bool.filtering.filterable = true];
-  bool rotate_credentials = 9 [(psm.list.v1.field).bool.filtering.filterable = true];
   string ecs_cluster = 10 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
   // Skips scale up/down, directly applying the updates in one infra call.
   bool quick_mode = 11 [(psm.list.v1.field).bool.filtering.filterable = true];
+  bool rotate_credentials = 12;
 
   repeated PostgresDatabase databases = 5;
   repeated CloudFormationStackParameter parameters = 6;
@@ -87,31 +138,14 @@ message DeploymentEvent {
   ];
 }
 
-enum StackLifecycle {
-  STACK_LIFECYCLE_UNSPECIFIED = 0;
+message DeploymentStackContext {
+  string deployment_id = 1;
+  string deployment_phase = 2;
+}
 
-  // Progressing well, no errors, no rollback
-  STACK_LIFECYCLE_PROGRESS = 1;
-
-  // Update or Create Completed successfully
-  STACK_LIFECYCLE_COMPLETE = 2;
-
-  // Rolling back to previous version or deleting on create failure
-  STACK_LIFECYCLE_ROLLING_BACK = 3;
-
-  // Create failure, rolled back to nothing
-  STACK_LIFECYCLE_CREATE_FAILED = 4;
-
-  // Update or create failure
-  STACK_LIFECYCLE_TERMINAL = 5;
-
-  // Update failure, rolled back to previous version and now stable.
-  // Good when waiting, bad when updating or scaling.
-  STACK_LIFECYCLE_ROLLED_BACK = 7;
-
-  // Missing, not present currently, either never created or deleted, not not
-  // 'rolled back'
-  STACK_LIFECYCLE_MISSING = 6;
+message DeploymentMigrationContext {
+  string deployment_id = 1;
+  string migration_id = 2;
 }
 
 message DeploymentEventType {
@@ -197,7 +231,16 @@ message DeploymentEventType {
 
 message DatabaseMigration {
   string migration_id = 1;
-  string db_name = 2;
+}
+
+message DatabaseMigrationType {
+  oneof type {
+    Postgres postgres = 1;
+  }
+
+  message Postgres {
+    string db_name = 1;
+  }
 }
 
 message DatabaseMigrationState {

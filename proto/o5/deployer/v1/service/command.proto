@@ -5,8 +5,9 @@ package o5.deployer.v1.service;
 import "buf/validate/validate.proto";
 import "google/api/annotations.proto";
 import "o5/auth/v1/annotations.proto";
-import "o5/deployer/v1/deployment.proto";
+import "o5/deployer/v1/environment.proto";
 import "o5/deployer/v1/stack.proto";
+import "o5/environment/v1/environment.proto";
 
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_spb";
 
@@ -21,6 +22,20 @@ service DeploymentCommandService {
 
   rpc TerminateDeployment(TerminateDeploymentRequest) returns (TerminateDeploymentResponse) {
     option (google.api.http) = {delete: "/deployer/v1/c/deployments/{deployment_id}"};
+  }
+
+  rpc UpsertEnvironment(UpsertEnvironmentRequest) returns (UpsertEnvironmentResponse) {
+    option (google.api.http) = {
+      post: "/deployer/v1/c/environments/{environment_id}/config"
+      body: "*"
+    };
+  }
+
+  rpc UpsertStack(UpsertStackRequest) returns (UpsertStackResponse) {
+    option (google.api.http) = {
+      post: "/deployer/v1/c/stacks/{stack_id}/config"
+      body: "*"
+    };
   }
 }
 
@@ -47,3 +62,24 @@ message TerminateDeploymentRequest {
 }
 
 message TerminateDeploymentResponse {}
+
+message UpsertEnvironmentRequest {
+  string environment_id = 1 [(buf.validate.field).string.uuid = true];
+  o5.environment.v1.Environment config = 2 [(buf.validate.field).required = true];
+}
+
+message UpsertEnvironmentResponse {
+  o5.deployer.v1.EnvironmentState state = 1 [(buf.validate.field).required = true];
+}
+
+message UpsertStackRequest {
+  string stack_id = 1 [(buf.validate.field).string.uuid = true];
+  string application_name = 2 [(buf.validate.field).required = true];
+  string environment_id = 3 [(buf.validate.field).string.uuid = true];
+
+  o5.deployer.v1.StackConfig config = 4 [(buf.validate.field).required = true];
+}
+
+message UpsertStackResponse {
+  o5.deployer.v1.StackState state = 1 [(buf.validate.field).required = true];
+}

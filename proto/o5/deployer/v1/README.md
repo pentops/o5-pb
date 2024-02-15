@@ -6,8 +6,8 @@ Deployer
 
 ```mermaid
 stateDiagram-v2
-	classDef error stroke:red,fill:#330000
-    classDef auto stroke:green,fill:#003300
+    classDef auto fill:#002222,stroke-dasharray:4
+	classDef failed stroke:red,fill:#330000
 
 	[*] --> CREATING : Triggered
 	CREATING --> CREATING : Triggered<br>(Adds to the queue)
@@ -19,7 +19,7 @@ stateDiagram-v2
 	AVAILABLE --> MIGRATING : Triggered<br>(External)
 	MIGRATING --> STABLE : DeploymentCompleted
 	MIGRATING --> MIGRATING : Triggered<br>(Adds to the queue)
-	CREATING --> BROKEN:::error : DeploymentFailed
+	CREATING --> BROKEN:::failed : DeploymentFailed
 	MIGRATING --> BROKEN : DeploymentFailed
 ```
 
@@ -27,7 +27,7 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
-    classDef auto stroke:green,fill:#003300
+    classDef auto fill:#002222,stroke-dasharray:4
 	classDef failed stroke:red,fill:#330000
 
     [*] --> QUEUED : Requested
@@ -85,3 +85,72 @@ stateDiagram-v2
 
 ```
 
+## ECS Task State
+
+```mermaid
+stateDiagram-v2
+    classDef auto fill:#002222,stroke-dasharray:4
+	classDef failed stroke:red,fill:#330000
+	classDef end stroke:green,fill:#003300
+
+    [*] --> REQUESTED : Request
+	REQUESTED --> RUNNING : Running
+	RUNNING --> RUNNING : Status (!= STOPPED)
+	RUNNING --> STOPPED : Status (STOPPED)
+	STOPPED:::auto --> DONE : Done
+	STOPPED --> ERROR : Error
+	REQUESTED --> ERROR : Error
+	DONE:::end --> [*]
+	ERROR:::failed --> [*]
+
+```
+
+## Postgres Migration State
+
+```mermaid
+stateDiagram-v2
+    classDef auto fill:#002222,stroke-dasharray:4
+	classDef failed stroke:red,fill:#330000
+	classDef end stroke:green,fill:#003300
+
+    [*] --> UPSERTING : Prepare
+	UPSERTING --> UPSERTING : Unblocked
+
+	FAILED_1:::failed : FAILED
+	UPSERTING --> FAILED_1 : Error
+
+	UPSERTING --> READY : UpsertDone
+
+
+	READY:::auto --> EVALUATING : EvaluateRun
+
+	FAILED_0:::failed : FAILED
+	EVALUATING --> FAILED_0 : Error
+
+	EVALUATING --> EVALUATED : EvaluateOutcome
+	EVALUATED:::auto --> NOP:::end : NoChanges
+	EVALUATING --> EVALUATING : Unblocked
+
+
+	state needsMigrate <<choice>>
+	EVALUATED:::auto --> needsMigrate : NeedsMigrate
+	READY --> needsMigrate : NeedsMigrate
+	needsMigrate --> BLOCKED : <code>blocked</code>
+	needsMigrate --> TRIGGERED : <code>unblocked</code>
+	BLOCKED --> TRIGGERED : Unblocked
+
+
+	TRIGGERED:::auto --> RUNNING : MigrateRun
+
+	FAILED_2:::failed : FAILED
+	RUNNING --> FAILED_2 : Error
+	RUNNING --> MIGRATED : MigrateDone
+	MIGRATED:::auto --> CLEANING_UP : CleanupRun
+
+	FAILED_3:::failed : FAILED
+	CLEANING_UP --> FAILED_3 : Error
+	CLEANING_UP --> DONE:::end : CleanupDone
+
+
+
+```

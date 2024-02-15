@@ -8,15 +8,6 @@ import "psm/list/v1/annotations.proto";
 
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
 
-
-message PostgresDatabase {
-  o5.application.v1.Database database = 1;
-  optional string migration_task_output_name = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
-	optional string secret_output_name = 3 [(psm.list.v1.field).string.open_text.searching.searchable = true];
-
-  o5.environment.v1.RDSHost rds_host = 4;
-}
-
 message Parameter {
   string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
   string type = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
@@ -47,11 +38,10 @@ message ParameterSourceType {
   }
 
   message RulePriority {
-    o5.application.v1.RouteGroup route_group = 1 [(psm.list.v1.field).enum.filtering = { filterable: true }];
+    o5.application.v1.RouteGroup route_group = 1 [(psm.list.v1.field).enum.filtering = {filterable: true}];
   }
 
-  message DesiredCount {
-  }
+  message DesiredCount {}
 
   message CrossEnvSns {
     string env_name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
@@ -61,7 +51,6 @@ message ParameterSourceType {
     string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
   }
 }
-
 
 message SNSTopic {
   string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
@@ -89,6 +78,13 @@ message CloudFormationStackParameterType {
   message RulePriority {
     o5.application.v1.RouteGroup route_group = 1;
   }
-  message DesiredCount {
-  }
+  message DesiredCount {}
+}
+
+message PostgresDatabase {
+  o5.application.v1.Database database = 1;
+  optional string migration_task_output_name = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  optional string secret_output_name = 3 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+
+  o5.environment.v1.RDSHost rds_host = 4;
 }

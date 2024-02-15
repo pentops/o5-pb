@@ -5,6 +5,7 @@ package o5.deployer.v1.service;
 import "google/api/annotations.proto";
 import "o5/auth/v1/annotations.proto";
 import "o5/deployer/v1/deployment.proto";
+import "o5/deployer/v1/environment.proto";
 import "o5/deployer/v1/stack.proto";
 import "psm/list/v1/annotations.proto";
 import "psm/list/v1/page.proto";
@@ -71,6 +72,36 @@ service DeploymentQueryService {
     };
     option (psm.state.v1.state_query_method) = {
       name: "stack"
+      list_events: true
+    };
+  }
+
+  rpc ListEnvironments(ListEnvironmentsRequest) returns (ListEnvironmentsResponse) {
+    option (google.api.http) = {
+      post: "/deployer/v1/q/environments"
+      body: "*"
+    };
+    option (psm.state.v1.state_query_method) = {
+      name: "environment"
+      list: true
+    };
+  }
+
+  rpc GetEnvironment(GetEnvironmentRequest) returns (GetEnvironmentResponse) {
+    option (google.api.http) = {get: "/deployer/v1/q/environment/{environment_id}"};
+    option (psm.state.v1.state_query_method) = {
+      name: "environment"
+      get: true
+    };
+  }
+
+  rpc ListEnvironmentEvents(ListEnvironmentEventsRequest) returns (ListEnvironmentEventsResponse) {
+    option (google.api.http) = {
+      post: "/deployer/v1/q/environment/{environment_id}/events"
+      body: "*"
+    };
+    option (psm.state.v1.state_query_method) = {
+      name: "environment"
       list_events: true
     };
   }
@@ -144,6 +175,39 @@ message ListStackEventsRequest {
 
 message ListStackEventsResponse {
   repeated o5.deployer.v1.StackEvent events = 1;
+
+  psm.list.v1.PageResponse page = 100;
+}
+
+message ListEnvironmentsRequest {
+  psm.list.v1.PageRequest page = 100;
+  psm.list.v1.QueryRequest query = 101;
+}
+
+message ListEnvironmentsResponse {
+  repeated o5.deployer.v1.EnvironmentState environments = 1;
+
+  psm.list.v1.PageResponse page = 100;
+}
+
+message GetEnvironmentRequest {
+  string environment_id = 1;
+}
+
+message GetEnvironmentResponse {
+  o5.deployer.v1.EnvironmentState state = 1;
+  repeated o5.deployer.v1.EnvironmentEvent events = 2;
+}
+
+message ListEnvironmentEventsRequest {
+  string environment_id = 1;
+
+  psm.list.v1.PageRequest page = 100;
+  psm.list.v1.QueryRequest query = 101;
+}
+
+message ListEnvironmentEventsResponse {
+  repeated o5.deployer.v1.EnvironmentEvent events = 1;
 
   psm.list.v1.PageResponse page = 100;
 }

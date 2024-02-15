@@ -1,4 +1,3 @@
-
 syntax = "proto3";
 
 package o5.deployer.v1;
@@ -11,17 +10,24 @@ option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
 
 message StackState {
   option (psm.state.v1.state).name = "stack";
-  string stack_id = 1 [
-    (buf.validate.field).string.uuid = true
-  ];
+  string stack_id = 1 [(buf.validate.field).string.uuid = true];
   StackStatus status = 2;
 
   optional StackDeployment current_deployment = 3;
 
   string application_name = 4;
   string environment_name = 5;
+  string environment_id = 8;
 
   repeated StackDeployment queued_deployments = 6;
+
+  StackLifecycle last_stack_lifecycle = 9;
+
+  StackConfig config = 10;
+}
+
+message StackConfig {
+  CodeSourceType code_source = 10;
 }
 
 enum StackStatus {
@@ -34,10 +40,20 @@ enum StackStatus {
 }
 
 message StackDeployment {
-  string deployment_id = 1 [
-    (buf.validate.field).string.uuid = true
-  ];
+  string deployment_id = 1 [(buf.validate.field).string.uuid = true];
   string version = 2;
+}
+
+message CodeSourceType {
+  oneof type {
+    Github github = 1;
+  }
+
+  message Github {
+    string owner = 1;
+    string repo = 2;
+    string ref_pattern = 3;
+  }
 }
 
 message StackEvent {
@@ -59,19 +75,28 @@ message StackEvent {
   ];
 }
 
-message StackEventType{
+message StackEventType {
   oneof type {
-    Triggered triggered = 1;
-    DeploymentCompleted deployment_completed = 2;
-    DeploymentFailed deployment_failed = 3;
-    Available available = 4;
+    Configured configured = 2;
+
+    Triggered triggered = 3;
+    DeploymentCompleted deployment_completed = 4;
+    DeploymentFailed deployment_failed = 5;
+    Available available = 6;
+  }
+
+  message Configured {
+    string application_name = 1;
+    string environment_id = 2;
+    string environment_name = 3;
+    StackConfig config = 4;
   }
 
   message Triggered {
     StackDeployment deployment = 1;
-
     string application_name = 2;
     string environment_name = 3;
+    string environment_id = 4;
   }
 
   message DeploymentCompleted {
@@ -83,7 +108,32 @@ message StackEventType{
     string error = 2;
   }
 
-  message Available {
-  }
+  message Available {}
+}
 
+enum StackLifecycle {
+  STACK_LIFECYCLE_UNSPECIFIED = 0;
+
+  // Progressing well, no errors, no rollback
+  STACK_LIFECYCLE_PROGRESS = 1;
+
+  // Update or Create Completed successfully
+  STACK_LIFECYCLE_COMPLETE = 2;
+
+  // Rolling back to previous version or deleting on create failure
+  STACK_LIFECYCLE_ROLLING_BACK = 3;
+
+  // Create failure, rolled back to nothing
+  STACK_LIFECYCLE_CREATE_FAILED = 4;
+
+  // Update or create failure
+  STACK_LIFECYCLE_TERMINAL = 5;
+
+  // Update failure, rolled back to previous version and now stable.
+  // Good when waiting, bad when updating or scaling.
+  STACK_LIFECYCLE_ROLLED_BACK = 7;
+
+  // Missing, not present currently, either never created or deleted, not not
+  // 'rolled back'
+  STACK_LIFECYCLE_MISSING = 6;
 }
