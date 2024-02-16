@@ -95,6 +95,13 @@ message Subscription {
 
   string target_container = 3; // Default: first defined container
   int64 port = 4; // Default: 8080
+
+  // in the format /foo.bar.v1.FooBar/Baz
+  // Subscribes only to the method, if not set, subscribes to all methods
+  optional string grpc_method = 5;
+
+  // For request-reply replies, filters to the reply.reply_to field
+  optional string reply_to = 6;
 }
 
 message Route {
