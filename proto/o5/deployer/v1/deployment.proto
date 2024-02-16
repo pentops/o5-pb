@@ -3,9 +3,10 @@ syntax = "proto3";
 package o5.deployer.v1;
 
 import "buf/validate/validate.proto";
-import "o5/deployer/v1/application.proto";
+import "o5/application/v1/application.proto";
 import "o5/deployer/v1/event.proto";
-import "o5/deployer/v1/stack.proto";
+import "o5/deployer/v1/pgmigrate.proto";
+import "o5/deployer/v1/steps.proto";
 import "psm/list/v1/annotations.proto";
 import "psm/state/v1/annotations.proto";
 
@@ -14,68 +15,17 @@ option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
 message DeploymentState {
   option (psm.state.v1.state).name = "deployment";
 
-  string deployment_id = 1;
+  string deployment_id = 1 [(buf.validate.field).string.uuid = true];
   DeploymentStatus status = 2 [(psm.list.v1.field).enum.filtering = {filterable: true}];
   DeploymentSpec spec = 3;
 
   string stack_name = 4 [(psm.list.v1.field).string.open_text.searching.searchable = true];
-  string stack_id = 7 [(psm.list.v1.field).string.foreign_key.uuid.filtering.filterable = true];
-
-  optional string waiting_on_remote_phase = 8;
-
-  StackLifecycle last_stack_lifecycle = 9;
-
-  repeated KeyValue stack_output = 6;
-  repeated DatabaseMigrationState data_migrations = 5;
+  string stack_id = 7 [
+    (buf.validate.field).string.uuid = true,
+    (psm.list.v1.field).string.foreign_key.uuid.filtering.filterable = true
+  ];
 
   repeated DeploymentStep steps = 10;
-}
-
-message DeploymentStep {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-  string name = 2;
-  StepStatus status = 3;
-  StepType type = 4;
-  optional string error = 5;
-  repeated string depends_on = 6;
-}
-
-enum StepStatus {
-  STEP_STATUS_UNSPECIFIED = 0;
-  STEP_STATUS_BLOCKED = 1;
-  STEP_STATUS_ACTIVE = 2;
-  STEP_STATUS_DONE = 3;
-  STEP_STATUS_FAILED = 4;
-}
-
-message StepType {
-  oneof type {
-    CFUpsert cf_upsert = 1;
-    CFScale cf_scale = 2;
-    PGUpsert pg_upsert = 6;
-    PGCleanup pg_cleanup = 7;
-    PGMigrate pg_migrate = 8;
-  }
-
-  message CFUpsert {
-    string stack_name = 1;
-    string template_url = 2;
-  }
-  message CFScale {
-    string stack_name = 1;
-    int32 desired_count = 2;
-  }
-  message PGUpsert {
-    string db_name = 1;
-    bool rotate_credentials = 2;
-  }
-  message PGCleanup {}
-  message PGMigrate {}
-}
-
-message StepContext {
-  string deployment_id = 1;
-  int32 step_id = 2;
 }
 
 message DeploymentSpec {
@@ -92,9 +42,9 @@ message DeploymentSpec {
   bool quick_mode = 11 [(psm.list.v1.field).bool.filtering.filterable = true];
   bool rotate_credentials = 12;
 
-  repeated PostgresDatabase databases = 5;
+  repeated PostgresSpec databases = 5;
   repeated CloudFormationStackParameter parameters = 6;
-  repeated SNSTopic sns_topics = 7;
+  repeated string sns_topics = 7;
 }
 
 enum DeploymentStatus {
@@ -103,17 +53,7 @@ enum DeploymentStatus {
   DEPLOYMENT_STATUS_TRIGGERED = 2;
   DEPLOYMENT_STATUS_WAITING = 3;
   DEPLOYMENT_STATUS_AVAILABLE = 4;
-  DEPLOYMENT_STATUS_SCALING_DOWN = 5;
-  DEPLOYMENT_STATUS_SCALED_DOWN = 6;
-  DEPLOYMENT_STATUS_INFRA_MIGRATE = 7;
-  DEPLOYMENT_STATUS_INFRA_MIGRATED = 8;
-  DEPLOYMENT_STATUS_DB_MIGRATING = 9;
-  DEPLOYMENT_STATUS_DB_MIGRATED = 10;
-  DEPLOYMENT_STATUS_SCALING_UP = 11;
-  DEPLOYMENT_STATUS_SCALED_UP = 12;
-  DEPLOYMENT_STATUS_CREATING = 13;
-  DEPLOYMENT_STATUS_UPSERTING = 15; // Single shot upsert of stack
-  DEPLOYMENT_STATUS_UPSERTED = 16;
+  DEPLOYMENT_STATUS_RUNNING = 5;
 
   DEPLOYMENT_STATUS_DONE = 100;
   DEPLOYMENT_STATUS_FAILED = 101;
@@ -138,34 +78,17 @@ message DeploymentEvent {
   ];
 }
 
-message DeploymentStackContext {
-  string deployment_id = 1;
-  string deployment_phase = 2;
-}
-
-message DeploymentMigrationContext {
-  string deployment_id = 1;
-  string migration_id = 2;
-}
-
 message DeploymentEventType {
   oneof type {
     Created created = 1;
     Triggered triggered = 2;
 
-    StackCreate stack_create = 3;
-
     StackWait stack_wait = 4;
-    StackScale stack_scale = 13;
-    StackTrigger stack_trigger = 5;
-    StackUpsert stack_upsert = 7;
-    StackStatus stack_status = 6;
+    StackWaitFailure stack_wait_failure = 5;
+    StackAvailable stack_available = 6;
 
-    MigrateData migrate_data = 8;
-
-    DBMigrateStatus db_migrate_status = 9;
-
-    DataMigrated data_migrated = 12;
+    RunSteps run_steps = 7;
+    StepResult step_result = 10;
 
     Error error = 99;
     Done done = 100;
@@ -183,42 +106,22 @@ message DeploymentEventType {
   // Waits for the stack to be ready, without making any changes
   message StackWait {}
 
-  message StackScale {
-    int32 desired_count = 1;
+  message StackWaitFailure {
+    string error = 1;
   }
 
-  // Triggers a stack update, then wait
-  message StackTrigger {
-    string phase = 1;
+  message StackAvailable {
+    bool stack_exists = 1;
   }
 
-  // Triggers a stack be created or updated to the latest version, fully scaled,
-  // in one single infra call. This is performed prior to DB migrations, so be
-  // careful with the compatibility of the two, i.e. the service must be able to
-  // come online prior to the DB migration completing.
-  message StackUpsert {}
+  message RunSteps {}
 
-  message StackStatus {
-    StackLifecycle lifecycle = 1;
-    string full_status = 2;
-    repeated KeyValue stack_output = 3;
-    string deployment_phase = 4;
-  }
-
-  // Triggers a DB migration of 0 or more databases
-  message MigrateData {
-    repeated DatabaseMigration databases = 1;
-  }
-
-  message DBMigrateStatus {
-    string db_name = 1;
-    string migration_id = 2;
-    DatabaseMigrationStatus status = 3;
+  message StepResult {
+    string step_id = 1;
+    StepStatus status = 2;
+    StepOutputType output = 3;
     optional string error = 4;
   }
-
-  // Triggered when all the DBs are migrated
-  message DataMigrated {}
 
   message Error {
     string error = 1;
@@ -227,34 +130,4 @@ message DeploymentEventType {
   message Done {}
 
   message Terminated {}
-}
-
-message DatabaseMigration {
-  string migration_id = 1;
-}
-
-message DatabaseMigrationType {
-  oneof type {
-    Postgres postgres = 1;
-  }
-
-  message Postgres {
-    string db_name = 1;
-  }
-}
-
-message DatabaseMigrationState {
-  string migration_id = 1 [(psm.list.v1.field).string.foreign_key.uuid.filtering.filterable = true];
-  string db_name = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
-  bool rotate_credentials = 3 [(psm.list.v1.field).bool.filtering.filterable = true];
-  DatabaseMigrationStatus status = 4 [(psm.list.v1.field).enum.filtering = {filterable: true}];
-}
-
-enum DatabaseMigrationStatus {
-  DATABASE_MIGRATION_STATUS_UNSPECIFIED = 0;
-  DATABASE_MIGRATION_STATUS_PENDING = 1;
-  DATABASE_MIGRATION_STATUS_RUNNING = 2;
-  DATABASE_MIGRATION_STATUS_CLEANUP = 3;
-  DATABASE_MIGRATION_STATUS_COMPLETED = 4;
-  DATABASE_MIGRATION_STATUS_FAILED = 5;
 }

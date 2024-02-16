@@ -17,11 +17,9 @@ message StackState {
 
   string application_name = 4;
   string environment_name = 5;
-  string environment_id = 8;
+  string environment_id = 8 [(buf.validate.field).string.uuid = true];
 
   repeated StackDeployment queued_deployments = 6;
-
-  StackLifecycle last_stack_lifecycle = 9;
 
   StackConfig config = 10;
 }
@@ -109,31 +107,4 @@ message StackEventType {
   }
 
   message Available {}
-}
-
-enum StackLifecycle {
-  STACK_LIFECYCLE_UNSPECIFIED = 0;
-
-  // Progressing well, no errors, no rollback
-  STACK_LIFECYCLE_PROGRESS = 1;
-
-  // Update or Create Completed successfully
-  STACK_LIFECYCLE_COMPLETE = 2;
-
-  // Rolling back to previous version or deleting on create failure
-  STACK_LIFECYCLE_ROLLING_BACK = 3;
-
-  // Create failure, rolled back to nothing
-  STACK_LIFECYCLE_CREATE_FAILED = 4;
-
-  // Update or create failure
-  STACK_LIFECYCLE_TERMINAL = 5;
-
-  // Update failure, rolled back to previous version and now stable.
-  // Good when waiting, bad when updating or scaling.
-  STACK_LIFECYCLE_ROLLED_BACK = 7;
-
-  // Missing, not present currently, either never created or deleted, not not
-  // 'rolled back'
-  STACK_LIFECYCLE_MISSING = 6;
 }

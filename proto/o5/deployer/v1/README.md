@@ -37,120 +37,209 @@ stateDiagram-v2
     WAITING --> WAITING : StackStatus.Progress
 	FAILED_1:::failed : FAILED
     WAITING --> FAILED_1:::failed : Stack Failure
-    WAITING --> AVAILABLE : StackStatus.Stable
-
-	state available <<choice>>
-	AVAILABLE:::auto --> available
-	available --> SCALING_DOWN : <code>if !quick & exists</code><br>StackScale(0)
-	available --> UPSERTING : <code>if quick</code><br>UpsertStack
-	available --> CREATING : <code>if !quick, !exists</code><br>StackCreate
-
-	CREATING --> INFRA_MIGRATED : Stack Stable
-
-
-    SCALING_DOWN --> SCALING_DOWN : Stack Progress
-    SCALING_DOWN --> SCALED_DOWN : Stack Stable
-	FAILED_2:::failed : FAILED
-    SCALING_DOWN --> FAILED_2 : Stack Failure
-
-    SCALED_DOWN:::auto --> INFRA_MIGRATE : Stack Trigger<br>(Infra Migrate)
-
-    INFRA_MIGRATE --> INFRA_MIGRATE : Stack Progress
-    INFRA_MIGRATE --> INFRA_MIGRATED : Stack Stable
-	FAILED_4:::failed : FAILED
-    INFRA_MIGRATE --> FAILED_4 : Stack Failure
-
-    INFRA_MIGRATED:::auto --> DB_MIGRATING : Migrate Data
-
-	FAILED_3:::failed : FAILED
-    DB_MIGRATING --> FAILED_3 : Migration Failure
-
-    DB_MIGRATING --> DB_MIGRATING : Progress
-    DB_MIGRATING --> DB_MIGRATED : All Complete
-
-
-    DB_MIGRATED:::auto --> SCALING_UP : Scale Trigger
-
-    SCALING_UP --> SCALING_UP : Stack Progress
-	FAILED_5:::failed : FAILED
-    SCALING_UP --> SCALED_UP : Scaled Stable
-    SCALING_UP --> FAILED_5 : Stack Failure
-
-    SCALED_UP:::auto --> DONE : Done
-	UPSERTING --> UPSERTED : Stack Stable
-	UPSERTED:::auto --> DONE : Done
-	UPSERTING_FAILED:::failed : FAILED
-	UPSERTING --> UPSERTING_FAILED : StackStatus.Error
-	DONE --> [*]
-
+    WAITING --> AVAILABLE : StackStatus.Complete<br>StackStatus.Missing<br>StackStatus.Terminal (rolled back)
+	AVAILABLE --> RUNNING : Running
+	state stepStatus <<choice>>
+	RUNNING --> stepStatus : StepStatus
+	stepStatus --> RUNNING : Any Running
+	state noRunning <<choice>>
+	stepStatus --> noRunning : All Stopped
+	noRunning --> FAILED_1 : Any Error
+	noRunning --> DONE : All OK
 ```
 
-## ECS Task State
+## Database Deriving
 
 ```mermaid
-stateDiagram-v2
-    classDef auto fill:#002222,stroke-dasharray:4
-	classDef failed stroke:red,fill:#330000
-	classDef end stroke:green,fill:#003300
+flowchart
 
-    [*] --> REQUESTED : Request
-	REQUESTED --> RUNNING : Running
-	RUNNING --> RUNNING : Status (!= STOPPED)
-	RUNNING --> STOPPED : Status (STOPPED)
-	STOPPED:::auto --> DONE : Done
-	STOPPED --> ERROR : Error
-	REQUESTED --> ERROR : Error
-	DONE:::end --> [*]
-	ERROR:::failed --> [*]
+	Application[o5.application.v1.Application]
+	Environment[o5.environment.v1.Environment]
+	Built[BuiltApplication]
+	DeploymentSpec[o5.deployer.v1.DeploymentSpec]
 
+	Application --> BuildApp(Build Application) --> Built --> Build(Build Spec)
+	Environment --> Build
+	Build --> CFTemplate
+	Build --> DeploymentSpec
 ```
 
-## Postgres Migration State
+# Sequences
+
+## Github Trigger
 
 ```mermaid
-stateDiagram-v2
-    classDef auto fill:#002222,stroke-dasharray:4
-	classDef failed stroke:red,fill:#330000
-	classDef end stroke:green,fill:#003300
+sequenceDiagram
+	autonumber
+	participant github as GitHub
+	participant webhook as GH Webhook<br>Worker
+	participant db as Deployer<br>DB
+	participant worker as Deployer<br>Worker
 
-    [*] --> UPSERTING : Prepare
-	UPSERTING --> UPSERTING : Unblocked
+	github ->> webhook : Push
+	webhook ->> db : Get Push Targets
+	db -->> webhook : Push Targets
+	webhook ->> github : Pull O5 Configs
+	github -->> webhook : O5 Configs
+	loop push targets
+	webhook ->> worker : RequestDeployment
+	end
+```
 
-	FAILED_1:::failed : FAILED
-	UPSERTING --> FAILED_1 : Error
+## Manual Trigger
 
-	UPSERTING --> READY : UpsertDone
+```mermaid
+sequenceDiagram
+	autonumber
+	actor user
+	participant github as GitHub
+	participant command as Deployer<br>Command
+	participant db as Deployer<br>DB
+	participant worker as Deployer<br>Worker
 
+	user ->> command : TriggerDeployment
+	command ->> github : Pull O5 Configs
+	github -->> command : O5 Configs
+	command ->> db : Lookup Environment
+	db -->> command : Matching Env
+	command ->> worker : RequestDeployment
+```
 
-	READY:::auto --> EVALUATING : EvaluateRun
+## Deployment
 
-	FAILED_0:::failed : FAILED
-	EVALUATING --> FAILED_0 : Error
+```mermaid
+sequenceDiagram
+	autonumber
+	participant bus as Event Bus
+	participant worker as Deployer<br>Worker
+	participant db as Deployer<br>DB
+	participant deployment as Deployment<br>PSM
+	participant stack as Stack<br>PSM
+	participant migration as PG Migration<br>PSM
+	participant aws as AWS
 
-	EVALUATING --> EVALUATED : EvaluateOutcome
-	EVALUATED:::auto --> NOP:::end : NoChanges
-	EVALUATING --> EVALUATING : Unblocked
+	bus ->> worker : RequestDeployment
+	activate worker
+	worker ->> db : GetEnvironment
+	db -->> worker : Environment
+	worker ->> worker : Build Spec
+	worker ->> aws : CF Template JSON (S3)
+	worker ->> deployment : Created
+	deployment ->> deployment : Status -> QUEUED
+	deactivate worker
 
+	deployment ->> stack : Triggered
+	stack ->> worker : TriggerDeployment
+	activate worker
+	worker ->> deployment : Triggered
+	note over deployment : TRIGGERED
 
-	state needsMigrate <<choice>>
-	EVALUATED:::auto --> needsMigrate : NeedsMigrate
-	READY --> needsMigrate : NeedsMigrate
-	needsMigrate --> BLOCKED : <code>blocked</code>
-	needsMigrate --> TRIGGERED : <code>unblocked</code>
-	BLOCKED --> TRIGGERED : Unblocked
+	deployment ->> deployment : StackWait
+	note over deployment : WAITING
+	deployment ->> aws : StabalizeStack
+	aws ->> worker : StackStatus.Missing
+	deactivate worker
 
+	activate worker
+	worker ->> deployment : StackStatus.Missing
+	deployment ->> deployment : StackCreate
+	deployment ->> aws : CreateNewStack
+	deactivate worker
 
-	TRIGGERED:::auto --> RUNNING : MigrateRun
+	aws ->> worker : StackStatus.Complete
+	worker ->> deployment : StackStatus.Complete
+	note over deployment : INFRA_MIGRATED
 
-	FAILED_2:::failed : FAILED
-	RUNNING --> FAILED_2 : Error
-	RUNNING --> MIGRATED : MigrateDone
-	MIGRATED:::auto --> CLEANING_UP : CleanupRun
+	deployment ->> deployment : MigrateData
+	note over deployment : DB_MIGRATING
 
-	FAILED_3:::failed : FAILED
-	CLEANING_UP --> FAILED_3 : Error
-	CLEANING_UP --> DONE:::end : CleanupDone
+	deployment ->> migration : MigratePostgresDatabase
+	migration ->> aws : Upsert DB
+	migration ->> aws : Cleanup Permissions
+	migration ->> aws : Run Migration ECS Task
+	migration ->> aws : Cleanup Permissions
+	migration ->> worker : MigrationStatus.Completed
+	worker ->> deployment : MigrationStatus.Completed
+	deployment ->> deployment : DataMigrated
+	note over deployment : DB_MIGRATED
+	deployment ->> deployment : StackScale:1
+	note over deployment : SCALING_UP
+	deployment ->> aws : ScaleStack
 
-
+	aws ->> worker : StackStatus.Complete
+	worker ->> deployment : StackStatus.Complete
+	note over deployment : SCALED_UP
+	deployment ->> deployment : Done
+	note over deployment : DONE
 
 ```
+
+
+
+# Deployment Plans
+
+## Current
+
+Current state of the code, does not evaluate, and quick is sequential.
+
+### Quick
+
+When 'quick' is set on deployer, does not support DB migration
+
+```mermaid
+flowchart LR
+  Start --> q1[CFUpsert] --> Done
+```
+
+
+### Full
+```mermaid
+flowchart LR
+  Start --> ScaleDown
+  ScaleDown --> d1[InfraMigrate] --> d2[PGMigrate] --> ScaleUp
+  ScaleUp --> Done
+```
+
+## Future / Plan
+
+### Quick
+
+When 'quick' is set on deployer, everything runs in parallel
+
+```mermaid
+flowchart LR
+  Start --> q1[CFUpsert] --> Done
+  Start --> q2[PGUpsert] --> q3[PGMigrate] --> q4[PGCleanup] --> Done
+```
+
+
+### Full
+
+Once evaluations are built in, the plan will depend on deployment config as well
+as the current state of the infra.
+
+```mermaid
+flowchart
+  Start --> PGUpsert --> PGEval --> EvalJoin
+  Start --> CFPlan --> EvalJoin{{EvalJoin}}
+  EvalJoin --DOWNTIME--> d0( )
+  EvalJoin --BEFORE--> b0( )
+  EvalJoin --NOP--> n0( )
+  EvalJoin --PARALLEL--> p0( )
+
+  d0 --> ScaleDown
+  ScaleDown --> d1[InfraMigrate] --> ScaleUp
+  ScaleDown --> d2[PGMigrate] --> d3[PGCleanup] --> ScaleUp
+  ScaleUp --> Done
+
+  b2[VersionMigrate]--> Done
+  b0 --> b1[InfraMigrate] --> b2
+  b0 --> b3[PGMigrate] --> b4[PGCleanup] --> b2
+
+  p0 --> p1[CFUpsert] --> Done
+  p0 --> p2[PGMigrate] --> p3[PGCleanup] --> Done
+
+  n0 --> n1[VersionMigrate] --> Done
+
+```
+
