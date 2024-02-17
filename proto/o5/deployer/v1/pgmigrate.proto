@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package o5.deployer.v1;
 
+import "o5/messaging/v1/reqres.proto";
+
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
 
 message PostgresSpec {
@@ -29,4 +31,9 @@ message PostgresMigrationSpec {
   string migration_task_arn = 1;
   string secret_arn = 2;
   string ecs_cluster_name = 3;
+}
+
+message MigrationTaskContext {
+  o5.messaging.v1.RequestMetadata upstream = 1;
+  string migration_id = 2;
 }

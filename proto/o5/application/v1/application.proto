@@ -102,6 +102,13 @@ message Subscription {
 
   // For request-reply replies, filters to the reply.reply_to field
   optional string reply_to = 6;
+
+  // The payload is not the standard messaging payload
+  // It should be parsed into a o5.messaging.v1.topic.RawMessage
+  // Used for infrastructure messages, e.g. AWS EventBridge or CloudWatch events.
+  // Setting non_grpc in AWS will set 'rawMessageDelivery' to *false*, i.e., the SNS wrapper
+  // will be included.
+  bool raw_message = 7;
 }
 
 message Route {
