@@ -43,8 +43,9 @@ message MigratePostgresDatabaseMessage {
 message PostgresDatabaseStatusMessage {
   o5.messaging.v1.RequestMetadata request = 1;
   string migration_id = 2 [(buf.validate.field).string.uuid = true];
-  PostgresStatus status = 3;
-  optional string error = 4;
+  string event_id = 3 [(buf.validate.field).string.uuid = true];
+  PostgresStatus status = 4;
+  optional string error = 5;
 }
 
 enum PostgresStatus {

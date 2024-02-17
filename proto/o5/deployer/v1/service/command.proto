@@ -5,6 +5,7 @@ package o5.deployer.v1.service;
 import "buf/validate/validate.proto";
 import "google/api/annotations.proto";
 import "o5/auth/v1/annotations.proto";
+import "o5/deployer/v1/deployment.proto";
 import "o5/deployer/v1/environment.proto";
 import "o5/deployer/v1/stack.proto";
 import "o5/environment/v1/environment.proto";
@@ -53,6 +54,8 @@ message TriggerDeploymentRequest {
     string repo = 3 [(buf.validate.field).required = true];
     string commit = 4 [(buf.validate.field).required = true];
   }
+
+  o5.deployer.v1.DeploymentFlags flags = 3;
 }
 
 message TriggerDeploymentResponse {}

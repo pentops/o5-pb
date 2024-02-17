@@ -2,9 +2,8 @@ syntax = "proto3";
 
 package o5.deployer.v1.topic;
 
+import "buf/validate/validate.proto";
 import "google/protobuf/empty.proto";
-import "o5/deployer/v1/deployment.proto";
-import "o5/deployer/v1/stack.proto";
 import "o5/deployer/v1/steps.proto";
 import "o5/messaging/v1/annotations.proto";
 import "o5/messaging/v1/reqres.proto";
@@ -62,8 +61,9 @@ message CancelStackUpdateMessage {
 
 message StackStatusChangedMessage {
   o5.messaging.v1.RequestMetadata request = 1;
-  string stack_name = 2;
-  string status = 3;
-  repeated o5.deployer.v1.KeyValue outputs = 4;
-  deployer.v1.CFLifecycle lifecycle = 5;
+  string event_id = 2 [(buf.validate.field).string = {pattern: "^[a-zA-Z0-9-]+$"}];
+  string stack_name = 3;
+  string status = 4;
+  repeated o5.deployer.v1.KeyValue outputs = 5;
+  deployer.v1.CFLifecycle lifecycle = 6;
 }
