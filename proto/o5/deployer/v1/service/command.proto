@@ -43,7 +43,8 @@ service DeploymentCommandService {
 message TriggerDeploymentRequest {
   string deployment_id = 1 [(buf.validate.field).string.uuid = true];
 
-  string environment_name = 2 [(buf.validate.field).required = true];
+  // Should be either a UUID, or the environment's full name
+  string environment = 2;
 
   oneof source {
     GithubSource github = 10;
@@ -55,10 +56,14 @@ message TriggerDeploymentRequest {
     string commit = 4 [(buf.validate.field).required = true];
   }
 
-  o5.deployer.v1.DeploymentFlags flags = 3;
+  o5.deployer.v1.DeploymentFlags flags = 4;
 }
 
-message TriggerDeploymentResponse {}
+message TriggerDeploymentResponse {
+  string deployment_id = 1 [(buf.validate.field).string.uuid = true];
+  string environment_id = 2 [(buf.validate.field).string.uuid = true];
+  string environment_name = 3;
+}
 
 message TerminateDeploymentRequest {
   string deployment_id = 1 [(buf.validate.field).string.uuid = true];
@@ -67,8 +72,14 @@ message TerminateDeploymentRequest {
 message TerminateDeploymentResponse {}
 
 message UpsertEnvironmentRequest {
-  string environment_id = 1 [(buf.validate.field).string.uuid = true];
-  o5.environment.v1.Environment config = 2 [(buf.validate.field).required = true];
+  // Should be either a UUID, or the environment's full name
+  string environment_id = 1;
+
+  oneof src {
+    o5.environment.v1.Environment config = 2;
+    bytes config_yaml = 3;
+    bytes config_json = 4;
+  }
 }
 
 message UpsertEnvironmentResponse {
@@ -76,9 +87,8 @@ message UpsertEnvironmentResponse {
 }
 
 message UpsertStackRequest {
-  string stack_id = 1 [(buf.validate.field).string.uuid = true];
-  string application_name = 2 [(buf.validate.field).required = true];
-  string environment_id = 3 [(buf.validate.field).string.uuid = true];
+  // Should be either a UUID, or the env-app style name for the stack.
+  string stack_id = 1;
 
   o5.deployer.v1.StackConfig config = 4 [(buf.validate.field).required = true];
 }
