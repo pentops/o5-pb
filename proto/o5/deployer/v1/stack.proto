@@ -15,8 +15,9 @@ message StackState {
 
   optional StackDeployment current_deployment = 3;
 
-  string application_name = 4;
-  string environment_name = 5;
+  string stack_name = 7 [(buf.validate.field).string.pattern = "^[a-z][a-z0-9]+-[a-z][a-z0-9]+$"];
+  string application_name = 4 [(buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$"];
+  string environment_name = 5 [(buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$"];
   string environment_id = 8 [(buf.validate.field).string.uuid = true];
 
   repeated StackDeployment queued_deployments = 6;
@@ -50,7 +51,7 @@ message CodeSourceType {
   message Github {
     string owner = 1;
     string repo = 2;
-    string ref_pattern = 3;
+    string branch = 3;
   }
 }
 
