@@ -47,7 +47,7 @@ message ListDeadMessagesRequest {
 message ListDeadMessagesResponse {
   repeated o5.dante.v1.DeadMessageState messages = 1;
 
-  psm.list.v1.PageRequest page = 100;
+  psm.list.v1.PageResponse page = 100;
 }
 
 message ListDeadMessageEventsRequest {
