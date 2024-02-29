@@ -4,6 +4,8 @@ import "buf/validate/validate.proto";
 import "google/api/annotations.proto";
 import "o5/dante/v1/dead_message.proto";
 import "o5/auth/v1/annotations.proto";
+import "psm/list/v1/page.proto";
+import "psm/list/v1/query.proto";
 
 package o5.dante.v1.service;
 
@@ -38,14 +40,14 @@ message GetDeadMessageResponse {
 }
 
 message ListDeadMessagesRequest {
-  // TODO: Filters
-  // TODO: Paging
+  psm.list.v1.PageRequest page = 100;
+  psm.list.v1.QueryRequest query = 101;
 }
 
 message ListDeadMessagesResponse {
   repeated o5.dante.v1.DeadMessageState messages = 1;
 
-  // TODO: Paging
+  psm.list.v1.PageResponse page = 100;
 }
 
 message ListDeadMessageEventsRequest {
