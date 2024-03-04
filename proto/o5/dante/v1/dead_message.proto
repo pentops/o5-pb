@@ -12,11 +12,16 @@ option go_package = "github.com/pentops/o5-go/dante/v1/dante_pb";
 
 
 message DeadMessageState {
+  option (psm.state.v1.state).name = "deadmessage";
   string message_id = 1 [
     (buf.validate.field).string.uuid = true
   ];
 
-  MessageStatus     status       = 2;
+  MessageStatus status = 2[(psm.list.v1.field).enum.filtering = {
+    filterable: true,
+    default_filters: ["MESSAGE_STATUS_CREATED"]
+  }];
+
   DeadMessageSpec   current_spec = 3;
 }
 
