@@ -22,14 +22,14 @@ service DeadMessageQueryService {
 
   rpc ListDeadMessages(ListDeadMessagesRequest) returns (ListDeadMessagesResponse) {
     option (google.api.http) = {get: "/dante/v1/q/messages"};
-    option (psm.state.v1.state_query_method).get = true;
+    option (psm.state.v1.state_query_method).list = true;
     option (psm.state.v1.state_query_method).name = "message";
   }
 
   rpc ListDeadMessageEvents(ListDeadMessageEventsRequest) returns (ListDeadMessageEventsResponse) {
     option (google.api.http) = {get: "/dante/v1/q/message/{message_id}/events"};
-    option (psm.state.v1.state_query_method).get = true;
-    option (psm.state.v1.state_query_method).name = "message_event";
+    option (psm.state.v1.state_query_method).list_events = true;
+    option (psm.state.v1.state_query_method).name = "message";
   }
 }
 
@@ -61,8 +61,13 @@ message ListDeadMessageEventsRequest {
   string message_id = 1 [
     (buf.validate.field).string.uuid = true
   ];
+
+  psm.list.v1.PageRequest page = 100;
+  psm.list.v1.QueryRequest query = 101;
 }
 
 message ListDeadMessageEventsResponse {
   repeated o5.dante.v1.DeadMessageEvent events = 1;
+
+  psm.list.v1.PageResponse page = 100;
 }
