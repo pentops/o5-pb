@@ -61,8 +61,13 @@ message ListDeadMessageEventsRequest {
   string message_id = 1 [
     (buf.validate.field).string.uuid = true
   ];
+
+  psm.list.v1.PageRequest page = 100;
+  psm.list.v1.QueryRequest query = 101;
 }
 
 message ListDeadMessageEventsResponse {
   repeated o5.dante.v1.DeadMessageEvent events = 1;
+
+  psm.list.v1.PageResponse page = 100;
 }
