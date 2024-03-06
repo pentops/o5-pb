@@ -19,3 +19,43 @@ options:
     unspecifiedSuffix: UNSPECIFIED
     strictUnmarshal: true
 
+git:
+  main: refs/heads/main
+protoBuilds:
+  - label: "o5-go"
+    goProxy:
+      path: github.com/pentops/o5-go
+      goModFile: ./ext/builder/o5-go/go.mod
+    plugins:
+      - label: go
+        parameters:
+          - module=github.com/pentops/o5-go
+        docker:
+          image: ghcr.io/pentops/protoc-gen-go:v1.32.0
+          pull: true
+      - label: go-grpc
+        parameters:
+          - module=github.com/pentops/o5-go
+        docker:
+          image: ghcr.io/pentops/protoc-gen-go-grpc:v1.3.0
+          pull: true
+      - label: go-sugar
+        parameters:
+          - module=github.com/pentops/o5-go
+        docker:
+          image: ghcr.io/pentops/protoc-gen-go-sugar:19495b5f5ac3fd3964a03031396d83f1bc1341ca
+          pull: true
+      - label: go-messaging
+        parameters:
+          - module=github.com/pentops/o5-go
+        docker:
+          image: ghcr.io/pentops/protoc-gen-go-messaging:9f9694311c7c2ad1d88dd6d0d3d5ece61f3c3e2c
+          pull: true
+          env:
+            - PROTOC_GEN_GO_MESSAGING_EXTRA_HEADERS=api-version:$GIT_HASH
+      - label: go-psm
+        parameters:
+          - module=github.com/pentops/o5-go
+        docker:
+          image: ghcr.io/pentops/protoc-gen-go-protostate:c03cf1448aa910fa7ffb37f0ed7de1ce10991271
+          pull: true
