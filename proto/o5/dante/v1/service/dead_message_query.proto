@@ -6,6 +6,7 @@ import "o5/dante/v1/dead_message.proto";
 import "o5/auth/v1/annotations.proto";
 import "psm/list/v1/page.proto";
 import "psm/list/v1/query.proto";
+import "psm/state/v1/annotations.proto";
 
 package o5.dante.v1.service;
 
