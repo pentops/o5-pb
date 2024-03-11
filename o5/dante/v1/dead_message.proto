@@ -75,7 +75,7 @@ message UnhandledError {
 
 // Any wraps the well-known any, but encodes messages as JSON in addition
 message Any {
-  google.protobuf.Any proto = 1;
+  // google.protobuf.Any proto = 1;
   string json = 2;
 }
 
