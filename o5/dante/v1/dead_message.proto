@@ -35,7 +35,18 @@ message DeadMessageSpec {
   string queue_name = 3;
   string grpc_name = 4;
 
-  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp created_at = 5 [
+    (buf.validate.field).required = true,
+    (psm.list.v1.field).timestamp = {
+      filtering: {
+        filterable: true,
+      },
+      sorting: {
+        sortable: true,
+        default_sort: true
+      }
+    }
+  ];
 
   Any payload = 7;
   Problem problem = 8;
@@ -66,7 +77,7 @@ enum Urgency {
 message InvariantViolation {
   string description = 1;
   Any error = 2;
-  Urgency urgency = 3;
+  Urgency urgency = 3 [(psm.list.v1.field).enum.filtering.filterable = true];
 }
 
 message UnhandledError {
