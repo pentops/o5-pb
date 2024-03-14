@@ -4,6 +4,7 @@ package o5.deployer.v1;
 
 import "buf/validate/validate.proto";
 import "o5/deployer/v1/event.proto";
+import "psm/list/v1/annotations.proto";
 import "psm/state/v1/annotations.proto";
 
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
@@ -11,7 +12,7 @@ option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
 message StackState {
   option (psm.state.v1.state).name = "stack";
   string stack_id = 1 [(buf.validate.field).string.uuid = true];
-  StackStatus status = 2;
+  StackStatus status = 2[(psm.list.v1.field).enum.filtering.filterable = true];
 
   optional StackDeployment current_deployment = 3;
 

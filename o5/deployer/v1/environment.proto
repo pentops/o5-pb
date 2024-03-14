@@ -5,6 +5,7 @@ package o5.deployer.v1;
 import "buf/validate/validate.proto";
 import "o5/deployer/v1/event.proto";
 import "o5/environment/v1/environment.proto";
+import "psm/list/v1/annotations.proto";
 import "psm/state/v1/annotations.proto";
 
 option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
@@ -14,7 +15,10 @@ message EnvironmentState {
 
   string environment_id = 1 [(buf.validate.field).string.uuid = true];
 
-  EnvironmentStatus status = 2;
+  EnvironmentStatus status = 2[(psm.list.v1.field).enum.filtering = {
+    filterable: true,
+    default_filters: ["ENVIRONMENT_STATUS_ACTIVE"],
+  }];
 
   o5.environment.v1.Environment config = 3;
 }

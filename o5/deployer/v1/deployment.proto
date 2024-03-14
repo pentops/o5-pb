@@ -28,7 +28,10 @@ message DeploymentState {
   google.protobuf.Timestamp created_at = 5 [
     (psm.list.v1.field).timestamp = {
       filtering: {filterable: true},
-      sorting: {sortable: true}
+      sorting: {
+        sortable: true,
+        default_sort: true
+      }
     }
   ];
 
