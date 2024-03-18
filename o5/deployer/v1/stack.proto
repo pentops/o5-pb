@@ -52,8 +52,11 @@ message CodeSourceType {
   message GitHub {
     string owner = 1;
     string repo = 2;
-    string branch = 3;
-    string commit = 4;
+
+    oneof ref {
+      string branch = 3;
+      string commit = 4;
+    }
   }
 }
 
