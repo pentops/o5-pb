@@ -116,7 +116,11 @@ message DeploymentEventType {
     DeploymentSpec spec = 1;
   }
 
-  message Triggered {}
+  message Triggered {
+    string environment = 1;
+    CodeSourceType source = 2;
+    DeploymentFlags flags = 3;
+  }
 
   message StackCreate {}
 
