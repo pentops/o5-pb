@@ -52,6 +52,7 @@ message DeploymentSpec {
   repeated PostgresSpec databases = 5;
   repeated CloudFormationStackParameter parameters = 6;
   repeated string sns_topics = 7;
+  CodeSourceType source = 11;
 }
 
 message DeploymentFlags {
