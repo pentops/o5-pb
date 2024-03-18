@@ -46,15 +46,7 @@ message TriggerDeploymentRequest {
   // Should be either a UUID, or the environment's full name
   string environment = 2;
 
-  oneof source {
-    GithubSource github = 10;
-  }
-
-  message GithubSource {
-    string owner = 2 [(buf.validate.field).required = true];
-    string repo = 3 [(buf.validate.field).required = true];
-    string commit = 4 [(buf.validate.field).required = true];
-  }
+  o5.deployer.v1.CodeSourceType source = 3;
 
   o5.deployer.v1.DeploymentFlags flags = 4;
 }
