@@ -43,6 +43,7 @@ message EnvironmentEvent {
 
   EnvironmentEventType event = 4 [
     (psm.state.v1.event_field).event_type = true,
+    (psm.list.v1.oneof).filtering.filterable = true,
     (buf.validate.field).required = true
   ];
 }
