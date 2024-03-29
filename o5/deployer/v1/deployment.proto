@@ -93,13 +93,14 @@ message DeploymentEvent {
 
   DeploymentEventType event = 3 [
     (psm.state.v1.event_field).event_type = true,
-    (psm.list.v1.oneof).filtering.filterable = true,
     (buf.validate.field).required = true
   ];
 }
 
 message DeploymentEventType {
   oneof type {
+    option (psm.list.v1.oneof).filtering.filterable = true;
+
     Created created = 1;
     Triggered triggered = 2;
 

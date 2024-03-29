@@ -75,15 +75,15 @@ message StackEvent {
 
   StackEventType event = 3 [
     (psm.state.v1.event_field).event_type = true,
-    (psm.list.v1.oneof).filtering.filterable = true,
     (buf.validate.field).required = true
   ];
 }
 
 message StackEventType {
   oneof type {
-    Configured configured = 2;
+    option (psm.list.v1.oneof).filtering.filterable = true;
 
+    Configured configured = 2;
     Triggered triggered = 3;
     DeploymentCompleted deployment_completed = 4;
     DeploymentFailed deployment_failed = 5;
