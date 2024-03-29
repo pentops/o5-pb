@@ -99,6 +99,8 @@ message DeploymentEvent {
 
 message DeploymentEventType {
   oneof type {
+    option (psm.list.v1.oneof).filtering.filterable = true;
+
     Created created = 1;
     Triggered triggered = 2;
 

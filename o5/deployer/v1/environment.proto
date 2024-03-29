@@ -49,6 +49,8 @@ message EnvironmentEvent {
 
 message EnvironmentEventType {
   oneof type {
+    option (psm.list.v1.oneof).filtering.filterable = true;
+
     Configured configured = 1;
   }
 

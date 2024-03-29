@@ -81,8 +81,9 @@ message StackEvent {
 
 message StackEventType {
   oneof type {
-    Configured configured = 2;
+    option (psm.list.v1.oneof).filtering.filterable = true;
 
+    Configured configured = 2;
     Triggered triggered = 3;
     DeploymentCompleted deployment_completed = 4;
     DeploymentFailed deployment_failed = 5;
