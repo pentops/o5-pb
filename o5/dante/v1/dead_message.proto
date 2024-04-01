@@ -32,8 +32,8 @@ message DeadMessageSpec {
   // The ID used by the underlying messaging infra, can be any format
   string infra_message_id = 2;
 
-  string queue_name = 3;
-  string grpc_name = 4;
+  string queue_name = 3 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string grpc_name = 4 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 
   google.protobuf.Timestamp created_at = 5 [
     (buf.validate.field).required = true,
@@ -54,6 +54,8 @@ message DeadMessageSpec {
 
 message Problem {
   oneof type {
+    option (psm.list.v1.oneof).filtering.filterable = true;
+
     InvariantViolation invariant_violation = 1;
     UnhandledError unhandled_error = 2;
   }
@@ -75,19 +77,19 @@ enum Urgency {
 }
 
 message InvariantViolation {
-  string description = 1;
+  string description = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
   Any error = 2;
   Urgency urgency = 3 [(psm.list.v1.field).enum.filtering.filterable = true];
 }
 
 message UnhandledError {
-  string error = 1;
+  string error = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 }
 
 // Any wraps the well-known any, but encodes messages as JSON in addition
 message Any {
   google.protobuf.Any proto = 1;
-  string json = 2;
+  string json = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
 }
 
 message DeadMessageEvent {
