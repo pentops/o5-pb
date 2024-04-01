@@ -16,9 +16,18 @@ message StackState {
 
   optional StackDeployment current_deployment = 3;
 
-  string stack_name = 7 [(buf.validate.field).string.pattern = "^[a-z][a-z0-9]+-[a-z][a-z0-9]+$"];
-  string application_name = 4 [(buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$"];
-  string environment_name = 5 [(buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$"];
+  string stack_name = 7 [
+    (buf.validate.field).string.pattern = "^[a-z][a-z0-9]+-[a-z][a-z0-9]+$",
+    (psm.list.v1.field).string.open_text.searching.searchable = true
+  ];
+  string application_name = 4 [
+    (buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$",
+    (psm.list.v1.field).string.open_text.searching.searchable = true
+  ];
+  string environment_name = 5 [
+    (buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$",
+    (psm.list.v1.field).string.open_text.searching.searchable = true
+  ];
   string environment_id = 8 [(buf.validate.field).string.uuid = true];
 
   repeated StackDeployment queued_deployments = 6;
