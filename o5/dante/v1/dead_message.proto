@@ -77,7 +77,7 @@ enum Urgency {
 }
 
 message InvariantViolation {
-  string description = 1;
+  string description = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
   Any error = 2;
   Urgency urgency = 3 [(psm.list.v1.field).enum.filtering.filterable = true];
 }
