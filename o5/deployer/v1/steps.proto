@@ -186,6 +186,6 @@ enum CFLifecycle {
 }
 
 message KeyValue {
-  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
-  string value = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string name = 1;
+  string value = 2;
 }
