@@ -27,7 +27,7 @@ message StackState {
     (buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$",
     (psm.list.v1.field).string.open_text.searching = {
       searchable: true,
-      field_identifier: "tsv_application_name"
+      field_identifier: "tsv_app_name"
     }
   ];
   string environment_name = 5 [
