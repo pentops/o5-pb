@@ -10,7 +10,10 @@ option go_package = "github.com/pentops/o5-go/environment/v1/environment_pb";
 message Environment {
   string full_name = 1 [
     (buf.validate.field).string.pattern = "^[a-z][a-z0-9]+$",
-    (psm.list.v1.field).string.open_text.searching.searchable = true
+    (psm.list.v1.field).string.open_text.searching = {
+      searchable: true,
+      field_identifier: "tsv_full_name",
+    }
   ];
 
   oneof provider {
