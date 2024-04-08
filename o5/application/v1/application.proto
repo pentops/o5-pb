@@ -53,7 +53,7 @@ message Grant {
 }
 
 message Database {
-  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string name = 1;
 
   oneof engine {
     option (psm.list.v1.oneof).filtering.filterable = true;
@@ -64,13 +64,13 @@ message Database {
   message Postgres {
     // The name of the database within the postgres instance, default is the
     // name in the parent message
-    string db_name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+    string db_name = 1;
 
     // default is 'default' - identifies which database server from the
     // environment config this belongs with
-    string server_group = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+    string server_group = 2;
 
-    repeated string db_extensions = 3 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+    repeated string db_extensions = 3;
 
     Container migrate_container = 4;
 
@@ -159,7 +159,7 @@ enum Demand {
 }
 
 message Container {
-  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string name = 1;
 
   oneof source {
     option (psm.list.v1.oneof).filtering.filterable = true;
@@ -168,17 +168,17 @@ message Container {
     Image image = 3;
   }
 
-  repeated string command = 4 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  repeated string command = 4;
 
   message Image {
-    string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+    string name = 1;
 
     // Defaults to the full git hash being deployed (or passed in --version
     // parameter)
-    optional string tag = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+    optional string tag = 2;
 
     // Defaults to the environment's registry, set here to override
-    optional string registry = 3 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+    optional string registry = 3;
   }
 
   // The amount of Memory and CPU to allocate to the container
@@ -191,12 +191,12 @@ message Container {
 }
 
 message EnvironmentVariable {
-  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string name = 1;
 
   oneof spec {
     option (psm.list.v1.oneof).filtering.filterable = true;
 
-    string value = 9 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+    string value = 9;
     DatabaseEnvVar database = 10;
     BlobstoreEnvVar blobstore = 11;
     MapEnvVar env_map = 12;
@@ -208,14 +208,14 @@ message EnvironmentVariable {
 
 message DatabaseEnvVar {
   // references a database in the top level array
-  string database_name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string database_name = 1;
 
   // TODO: Formats. Default is a full URI which might do.
 }
 
 message BlobstoreEnvVar {
-  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
-  optional string sub_path = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string name = 1;
+  optional string sub_path = 2;
 
   oneof format {
     option (psm.list.v1.oneof).filtering.filterable = true;
@@ -229,16 +229,16 @@ message BlobstoreEnvVar {
 message MapEnvVar {}
 
 message FromEnvVar {
-  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string name = 1;
 }
 
 message SecretEnvVar {
-  string secret_name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
-  string json_key = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string secret_name = 1;
+  string json_key = 2;
 }
 
 message Secret {
-  string name = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string name = 1;
 }
 
 message AWSConfig {
