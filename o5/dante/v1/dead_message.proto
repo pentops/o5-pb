@@ -6,24 +6,21 @@ import "buf/validate/validate.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
 import "o5/auth/v1/actor.proto";
-import "psm/state/v1/annotations.proto";
 import "psm/list/v1/annotations.proto";
+import "psm/state/v1/annotations.proto";
 
 option go_package = "github.com/pentops/o5-go/dante/v1/dante_pb";
 
-
 message DeadMessageState {
   option (psm.state.v1.state).name = "deadmessage";
-  string message_id = 1 [
-    (buf.validate.field).string.uuid = true
-  ];
+  string message_id = 1 [(buf.validate.field).string.uuid = true];
 
-  MessageStatus status = 2[(psm.list.v1.field).enum.filtering = {
+  MessageStatus status = 2 [(psm.list.v1.field).enum.filtering = {
     filterable: true,
     default_filters: ["MESSAGE_STATUS_CREATED"]
   }];
 
-  DeadMessageSpec   current_spec = 3;
+  DeadMessageSpec current_spec = 3;
 }
 
 message DeadMessageSpec {
@@ -32,15 +29,19 @@ message DeadMessageSpec {
   // The ID used by the underlying messaging infra, can be any format
   string infra_message_id = 2;
 
-  string queue_name = 3 [(psm.list.v1.field).string.open_text.searching.searchable = true];
-  string grpc_name = 4 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string queue_name = 3 [(psm.list.v1.field).string.open_text.searching = {
+    searchable: true
+    field_identifier: "queue_name"
+  }];
+  string grpc_name = 4 [(psm.list.v1.field).string.open_text.searching = {
+    searchable: true
+    field_identifier: "grpc_name"
+  }];
 
   google.protobuf.Timestamp created_at = 5 [
     (buf.validate.field).required = true,
     (psm.list.v1.field).timestamp = {
-      filtering: {
-        filterable: true,
-      },
+      filtering: {filterable: true},
       sorting: {
         sortable: true,
         default_sort: true
@@ -63,10 +64,10 @@ message Problem {
 
 enum MessageStatus {
   MESSAGE_STATUS_UNSPECIFIED = 0;
-  MESSAGE_STATUS_CREATED     = 1;
-  MESSAGE_STATUS_UPDATED     = 2;
-  MESSAGE_STATUS_REPLAYED    = 3;
-  MESSAGE_STATUS_REJECTED    = 4;
+  MESSAGE_STATUS_CREATED = 1;
+  MESSAGE_STATUS_UPDATED = 2;
+  MESSAGE_STATUS_REPLAYED = 3;
+  MESSAGE_STATUS_REJECTED = 4;
 }
 
 enum Urgency {
@@ -77,19 +78,25 @@ enum Urgency {
 }
 
 message InvariantViolation {
-  string description = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string description = 1 [(psm.list.v1.field).string.open_text.searching = {
+    searchable: true
+    field_identifier: "description"
+  }];
   Any error = 2;
   Urgency urgency = 3 [(psm.list.v1.field).enum.filtering.filterable = true];
 }
 
 message UnhandledError {
-  string error = 1 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string error = 1 [(psm.list.v1.field).string.open_text.searching = {
+    searchable: true
+    field_identifier: "error"
+  }];
 }
 
 // Any wraps the well-known any, but encodes messages as JSON in addition
 message Any {
   google.protobuf.Any proto = 1;
-  string json = 2 [(psm.list.v1.field).string.open_text.searching.searchable = true];
+  string json = 2;
 }
 
 message DeadMessageEvent {
@@ -114,8 +121,8 @@ message DeadMessageEventType {
   oneof type {
     option (psm.list.v1.oneof).filtering.filterable = true;
 
-    Created  created  = 1;
-    Updated  updated  = 2;
+    Created created = 1;
+    Updated updated = 2;
     Replayed replayed = 3;
     Rejected rejected = 4;
   }
@@ -128,8 +135,7 @@ message DeadMessageEventType {
     DeadMessageSpec spec = 1;
   }
 
-  message Replayed {
-  }
+  message Replayed {}
 
   message Rejected {
     string reason = 1;
@@ -137,13 +143,9 @@ message DeadMessageEventType {
 }
 
 message Metadata {
-  string event_id = 1 [
-    (buf.validate.field).string.uuid = true
-  ];
+  string event_id = 1 [(buf.validate.field).string.uuid = true];
 
-  google.protobuf.Timestamp timestamp = 2 [
-    (buf.validate.field).required = true
-  ];
+  google.protobuf.Timestamp timestamp = 2 [(buf.validate.field).required = true];
 
   o5.auth.v1.Actor actor = 3;
 }
