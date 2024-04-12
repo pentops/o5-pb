@@ -28,8 +28,14 @@ message Application {
 
 message SidecarConfig {
   // chance percentage of sidecar behavior: replay message or process then treat as a deadletter
-  int64 replay_chance = 1 [(buf.validate.field).int64.gte = 0, (buf.validate.field).int64.lte = 100];
-  int64 deadletter_chance = 2 [(buf.validate.field).int64.gte = 0, (buf.validate.field).int64.lte = 100];
+  int64 replay_chance = 1 [
+    (buf.validate.field).int64.gte = 0,
+    (buf.validate.field).int64.lte = 100
+  ];
+  int64 deadletter_chance = 2 [
+    (buf.validate.field).int64.gte = 0,
+    (buf.validate.field).int64.lte = 100
+  ];
 }
 
 message DeploymentConfig {
@@ -46,6 +52,28 @@ message Target {
 message Blobstore {
   string name = 1;
   repeated Grant grants = 2;
+
+  // The blobstore is a reference to a one owned by another application, it will
+  // not be created in the stack for the current application, but permissions
+  // will be granted.
+  BlobstoreRef ref = 3;
+}
+
+message BlobstoreRef {
+  // This application is allowed to read from the
+  // bucket. Default is true unless write_permission is true.
+  bool read_permission = 1;
+
+  // This application is allowed to write to the bucket. Does not imply
+  // read_permissions. Default is false.
+  bool write_permission = 2;
+
+  oneof source {
+    string application = 10; // `application.name` for an app in the same environment
+    // Full name of the 'bucket' for the blobstore,
+    // does not follow any patterns.
+    string bucket_name = 11;
+  }
 }
 
 message Grant {
