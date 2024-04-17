@@ -12,7 +12,7 @@ option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
 message StackState {
   option (psm.state.v1.state).name = "stack";
   string stack_id = 1 [(buf.validate.field).string.uuid = true];
-  StackStatus status = 2[(psm.list.v1.field).enum.filtering.filterable = true];
+  StackStatus status = 2 [(psm.list.v1.field).enum.filtering.filterable = true];
 
   optional StackDeployment current_deployment = 3;
 
@@ -45,7 +45,7 @@ message StackState {
 }
 
 message StackConfig {
-  CodeSourceType code_source = 10;
+  SourceTriggerType code_source = 10;
 }
 
 enum StackStatus {
@@ -62,19 +62,15 @@ message StackDeployment {
   string version = 2;
 }
 
-message CodeSourceType {
+message SourceTriggerType {
   oneof type {
-    GitHub git_hub = 1;
+    Github github = 1;
   }
 
-  message GitHub {
+  message Github {
     string owner = 1;
     string repo = 2;
-
-    oneof ref {
-      string branch = 3;
-      string commit = 4;
-    }
+    string branch = 3;
   }
 }
 
