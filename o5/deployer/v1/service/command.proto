@@ -4,6 +4,7 @@ package o5.deployer.v1.service;
 
 import "buf/validate/validate.proto";
 import "google/api/annotations.proto";
+import "j5/ext/v1/annotations.proto";
 import "o5/auth/v1/annotations.proto";
 import "o5/deployer/v1/deployment.proto";
 import "o5/deployer/v1/environment.proto";
@@ -46,7 +47,14 @@ message TriggerDeploymentRequest {
   // Should be either a UUID, or the environment's full name
   string environment = 2;
 
-  oneof source {
+  TriggerSource source = 3;
+
+  o5.deployer.v1.DeploymentFlags flags = 4;
+}
+
+message TriggerSource {
+  option (j5.ext.v1.message).is_oneof_wrapper = true;
+  oneof type {
     GithubSource github = 10;
   }
 
@@ -56,11 +64,9 @@ message TriggerDeploymentRequest {
     oneof ref {
       string branch = 4;
       string tag = 5;
-      string sha = 6;
+      string commit = 6;
     }
   }
-
-  o5.deployer.v1.DeploymentFlags flags = 4;
 }
 
 message TriggerDeploymentResponse {
