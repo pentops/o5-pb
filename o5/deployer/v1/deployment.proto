@@ -6,7 +6,6 @@ import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 import "o5/deployer/v1/event.proto";
 import "o5/deployer/v1/pgmigrate.proto";
-import "o5/deployer/v1/stack.proto";
 import "o5/deployer/v1/steps.proto";
 import "psm/list/v1/annotations.proto";
 import "psm/state/v1/annotations.proto";
@@ -29,15 +28,13 @@ message DeploymentState {
     (psm.list.v1.field).string.foreign_key.uuid.filtering.filterable = true
   ];
 
-  google.protobuf.Timestamp created_at = 5 [
-    (psm.list.v1.field).timestamp = {
-      filtering: {filterable: true},
-      sorting: {
-        sortable: true,
-        default_sort: true
-      }
+  google.protobuf.Timestamp created_at = 5 [(psm.list.v1.field).timestamp = {
+    filtering: {filterable: true},
+    sorting: {
+      sortable: true,
+      default_sort: true
     }
-  ];
+  }];
 
   repeated DeploymentStep steps = 10;
 }
@@ -72,6 +69,18 @@ message DeploymentSpec {
   repeated CloudFormationStackParameter parameters = 6;
   repeated string sns_topics = 7;
   CodeSourceType source = 11;
+}
+
+message CodeSourceType {
+  oneof type {
+    Github github = 1;
+  }
+
+  message Github {
+    string owner = 1;
+    string repo = 2;
+    string commit = 3;
+  }
 }
 
 message DeploymentFlags {
