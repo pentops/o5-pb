@@ -57,5 +57,5 @@ protoBuilds:
         parameters:
           - module=github.com/pentops/o5-go
         docker:
-          image: ghcr.io/pentops/protoc-gen-go-protostate:45c9f793911fb79a77051355fd4366d85fc3792f
+          image: ghcr.io/pentops/protoc-gen-go-protostate:8daef5060f930ca57a47920ced86ed319710b62a
           pull: true
