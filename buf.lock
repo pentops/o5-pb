@@ -4,20 +4,25 @@ deps:
   - remote: buf.build
     owner: bufbuild
     repository: protovalidate
-    commit: b983156c5e994cc9892e0ce3e64e17e0
-    digest: shake256:fb47a62989d38c2529bcc5cd86ded43d800eb84cee82b42b9e8a9e815d4ee8134a0fb9d0ce8299b27c2d2bbb7d6ade0c4ad5a8a4d467e1e2c7ca619ae9f634e2
+    commit: 46a4cf4ba1094a34bcd89a6c67163b4b
+    digest: shake256:436ce453801917c11bc7b21d66bcfae87da2aceb804a041487be1e51dc9fbc219e61ea6a552db7a7aa6d63bb5efd0f3ed5fe3d4c42d4f750d0eb35f14144e3b6
   - remote: buf.build
     owner: googleapis
     repository: googleapis
-    commit: 7a6bc1e3207144b38e9066861e1de0ff
-    digest: shake256:d646836485c34192401253703c4e7ce899c826fceec060bf4b2a62c4749bd9976dc960833e134a1f814725e1ffd60b1bb3cf0335a7e99ef0e8cec34b070ffb66
+    commit: 7ed55ddc0cf949369a2f6b31eb62e454
+    digest: shake256:de26a277fc28b8b411ecf58729d78d32fcf15090ffd998a4469225b17889bfb51442eaab04bb7a8d88d203ecdf0a9febd4ffd52c18ed1c2229160c7bd353ca95
   - remote: buf.build
     owner: pentops
-    repository: jsonapi
-    commit: d514d3f410e74f4b9493bc8040cbbc0f
-    digest: shake256:c427bb42f7c7149f9d031dfd529916a05f5ced21e9cf0a7cc8a87f0e5314398bf9efb5df9ef1b25b7d2fd910b50204b537e2c41053db726836b5838b89bfd6fe
+    repository: j5
+    commit: 0aad3f18b7b048f39a026e8130703885
+    digest: shake256:42207ccae61f211f55547d5c1dc231b01d048b15b86a87b7873bdf061bf6a3483b617e1de241becb064552cab0231713ffbbbe4c23c0b2ae6b00b83792c971ba
   - remote: buf.build
     owner: pentops
-    repository: psm
-    commit: 9ffc551a28964624850d97a3a3c957cc
-    digest: shake256:d70347d819f45ef3cfc3408c92d9481838d06411ec3228720583738f26b34436769650f333dfa41b59c584f2b021f2d38ffee5ffd1298b2c688fb9ba765d71e9
+    repository: listify
+    commit: f8340e85a19c464ca909db89a45b9b57
+    digest: shake256:fe3921bb77acb2e244d32a3f3c4c423ab02f92cacf9b914edce78aecd89d52446adb9e1d62bd4a80d49bbfe517a8b6f0382aaa15ede9dd7f55329a45fd16a187
+  - remote: buf.build
+    owner: pentops
+    repository: protostate
+    commit: f4b0f9d262d3413db2b90543929f80ea
+    digest: shake256:e678dc1f6ec7eb49df88e59bf6c2897ea8e78d6f3b0d8644e37c53492462a4ffe2db35e50649e2b5d961c59c58b1f235e5fcf8256cac7649c563abd08df6d4d4
