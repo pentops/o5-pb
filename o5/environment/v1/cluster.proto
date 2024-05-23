@@ -32,6 +32,7 @@ message ECSCluster {
   string vpc_id = 5;
   string aws_account = 6;
   string aws_region = 7;
+  string event_bridge_name = 16;
 
   // The role to assume when deploying to this environment
   string o5_deployer_assume_role = 8;
