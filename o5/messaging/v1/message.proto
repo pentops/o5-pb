@@ -15,7 +15,7 @@ message Message {
   // The 'full_name' of the gRPC method, /<package>.<service>/<method>
   string grpc_method = 2 [(buf.validate.field).string = {pattern: "^\\/([a-z0-9_]+\\.)+([A-Z][a-zA-Z0-9_]+)\\/([A-Za-z0-9_]+)$"}];
 
-  google.protobuf.Any body = 3;
+  Any body = 3;
 
   // Then o5.application.name which sent the message
   string source_app = 4;
@@ -31,4 +31,11 @@ message Message {
   optional string reply_dest = 7;
 
   map<string, string> headers = 8;
+}
+
+// Any is wire-compatible with google.protobuf.Any, but without the parsing and
+// encoding methods, i.e. it leaves proto messages proto bytes
+message Any {
+  string type_url = 1;
+  bytes value = 2;
 }
