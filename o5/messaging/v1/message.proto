@@ -12,25 +12,28 @@ option go_package = "github.com/pentops/o5-go/messaging/v1/messaging_pb";
 message Message {
   string message_id = 1 [(buf.validate.field).string.uuid = true];
 
-  // The 'full_name' of the gRPC method, /<package>.<service>/<method>
-  string grpc_method = 2 [(buf.validate.field).string = {pattern: "^\\/([a-z0-9_]+\\.)+([A-Z][a-zA-Z0-9_]+)\\/([A-Za-z0-9_]+)$"}];
+  // The 'full_name' of the gRPC service <package>.<service>
+  string grpc_service = 2 [(buf.validate.field).string = {pattern: "^([a-z0-9_]+\\.)+([A-Z][a-zA-Z0-9_]+)$"}];
 
-  Any body = 3;
+  // The short name of the method in the gRPC service
+  string grpc_method = 3 [(buf.validate.field).string = {pattern: "^([A-Za-z0-9_]+)$"}];
+
+  Any body = 4;
 
   // Then o5.application.name which sent the message
-  string source_app = 4;
+  string source_app = 5;
 
   // The o5.environment.full_name which sent the message
-  string source_env = 5;
+  string source_env = 6;
 
   // compatibility with named topic messaging, specifies the destination name
-  string destination_topic = 6;
+  string destination_topic = 7;
 
   // In the reply to a request/reply message, Identifies the service or instance
   // which first sent the request, and then to which the reply should be routed.
-  optional string reply_dest = 7;
+  optional string reply_dest = 8;
 
-  map<string, string> headers = 8;
+  map<string, string> headers = 9;
 }
 
 // Any is wire-compatible with google.protobuf.Any, but without the parsing and
