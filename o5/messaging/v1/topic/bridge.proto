@@ -3,24 +3,17 @@ syntax = "proto3";
 package o5.messaging.v1.topic;
 
 import "google/protobuf/empty.proto";
+import "o5/messaging/v1/message.proto";
 
 option go_package = "github.com/pentops/o5-go/messaging/v1/messaging_tpb";
 
-// MessageBridge allows generic gRPC messages to be sent through the sidecar /
-// adapter
+// MessageBridge allows o5 messages to be sent through the sidecar
 service MessageBridgeTopic {
   rpc Send(SendMessage) returns (google.protobuf.Empty) {}
 }
 
 message SendMessage {
-  string id = 1;
-  bytes payload = 2;
-  string destination = 3;
-  string message_type = 4;
-  repeated MessageHeader headers = 5;
-}
-
-message MessageHeader {
-  string key = 1;
-  string value = 2;
+  // The message to send. source_app and source_env are overridden by the
+  // sidecar or adapter.
+  o5.messaging.v1.Message message = 1;
 }
