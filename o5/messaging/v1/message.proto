@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package o5.messaging.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/pentops/o5-go/messaging/v1/messaging_pb";
+
+// Message wraps messaging content for the underlying platform routing and
+// delivery.
+message Message {
+  string message_id = 1 [(buf.validate.field).string.uuid = true];
+
+  // The 'full_name' of the gRPC method, /<package>.<service>/<method>
+  string grpc_method = 2 [(buf.validate.field).string = {pattern: "^\\/([a-z0-9_]+\\.)+([A-Z][a-zA-Z0-9_]+)\\/([A-Za-z0-9_]+)$"}];
+
+  google.protobuf.Any body = 3;
+
+  // Then o5.application.name which sent the message
+  string source_app = 4;
+
+  // The o5.environment.full_name which sent the message
+  string source_env = 5;
+
+  // compatibility with named topic messaging, specifies the destination name
+  string destination_topic = 6;
+
+  // In the reply to a request/reply message, Identifies the service or instance
+  // which first sent the request, and then to which the reply should be routed.
+  optional string reply_dest = 7;
+
+  map<string, string> headers = 8;
+}
