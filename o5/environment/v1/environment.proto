@@ -75,6 +75,7 @@ message AWSGrantPrincipal {
 }
 
 message AWSLink {
-  string full_name = 1; // used to match
-  string sns_prefix = 2;
+  string lookup_name = 1; // used to match in application configs
+  string full_name = 2;
+  string sns_prefix = 3;
 }
