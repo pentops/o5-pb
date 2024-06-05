@@ -9,20 +9,15 @@ deps:
   - remote: buf.build
     owner: googleapis
     repository: googleapis
-    commit: 7ed55ddc0cf949369a2f6b31eb62e454
+    commit: f0e53af8f2fc4556b94f482688b57223
     digest: shake256:de26a277fc28b8b411ecf58729d78d32fcf15090ffd998a4469225b17889bfb51442eaab04bb7a8d88d203ecdf0a9febd4ffd52c18ed1c2229160c7bd353ca95
   - remote: buf.build
     owner: pentops
     repository: j5
-    commit: 0aad3f18b7b048f39a026e8130703885
-    digest: shake256:42207ccae61f211f55547d5c1dc231b01d048b15b86a87b7873bdf061bf6a3483b617e1de241becb064552cab0231713ffbbbe4c23c0b2ae6b00b83792c971ba
+    commit: cb386351972643898745edecf43ecabf
+    digest: shake256:382ba8fa19d1b9ddd3568bf0bb95b236b5cb0835e3aeff718e77d3497e7503b77760c9c608cbf0d25168641e5f86678b4c5ac031d5d65a74cea7a4666bdce22a
   - remote: buf.build
     owner: pentops
     repository: listify
-    commit: f8340e85a19c464ca909db89a45b9b57
-    digest: shake256:fe3921bb77acb2e244d32a3f3c4c423ab02f92cacf9b914edce78aecd89d52446adb9e1d62bd4a80d49bbfe517a8b6f0382aaa15ede9dd7f55329a45fd16a187
-  - remote: buf.build
-    owner: pentops
-    repository: protostate
-    commit: f4b0f9d262d3413db2b90543929f80ea
-    digest: shake256:e678dc1f6ec7eb49df88e59bf6c2897ea8e78d6f3b0d8644e37c53492462a4ffe2db35e50649e2b5d961c59c58b1f235e5fcf8256cac7649c563abd08df6d4d4
+    commit: 88fbd382a3e34ecfb80f8e35c19126c3
+    digest: shake256:832cd76e75747f5a073a97d50f6562fe2fd7e96f5fbd4950b5291d623da486409aabf2a09e06c1d26df1692f0301b40b880cbf800dd7ba7f794c764bd53aa15d
