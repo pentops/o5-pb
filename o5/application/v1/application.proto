@@ -145,6 +145,10 @@ message Subscription {
   // Setting non_grpc in AWS will set 'rawMessageDelivery' to *false*, i.e., the SNS wrapper
   // will be included.
   bool raw_message = 7;
+
+  // Subscribes to infra events, e.g. AWS ECS Task status
+  // Requires grant_meta_deploy_permissions to be true
+  bool meta_infra_events = 8;
 }
 
 message Route {
