@@ -22,20 +22,6 @@ message Application {
   // infrastructure adapters, e.g. a service which sends emails using SES, the
   // o5 deployer itself, dante etc.
   AWSConfig aws_config = 12;
-
-  SidecarConfig sidecar_config = 13;
-}
-
-message SidecarConfig {
-  // chance percentage of sidecar behavior: replay message or process then treat as a deadletter
-  int64 replay_chance = 1 [
-    (buf.validate.field).int64.gte = 0,
-    (buf.validate.field).int64.lte = 100
-  ];
-  int64 deadletter_chance = 2 [
-    (buf.validate.field).int64.gte = 0,
-    (buf.validate.field).int64.lte = 100
-  ];
 }
 
 message DeploymentConfig {
@@ -123,6 +109,24 @@ message Runtime {
   // when true, marks this application as a deployer app, meaning it should have
   // permissions to deploy itself and other permissions
   bool grant_meta_deploy_permissions = 6;
+
+  WorkerConfig worker_config = 13;
+}
+
+message WorkerConfig {
+  // chance percentage of sidecar behavior: replay message or process then treat as a deadletter
+  int64 replay_chance = 1 [
+    (buf.validate.field).int64.gte = 0,
+    (buf.validate.field).int64.lte = 100
+  ];
+  int64 deadletter_chance = 2 [
+    (buf.validate.field).int64.gte = 0,
+    (buf.validate.field).int64.lte = 100
+  ];
+
+  // if true, sidecar will not send dead letter messages, should only be used
+  // for dead-letter handlers (e.g. dante)
+  bool no_deadletters = 3;
 }
 
 message Subscription {

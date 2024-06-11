@@ -24,7 +24,7 @@ service DeploymentReplyTopic {
 }
 
 message RequestDeploymentMessage {
-  o5.messaging.v1.RequestMetadata metadata = 1;
+  o5.messaging.v1.RequestMetadata request = 1;
 
   string deployment_id = 2 [(buf.validate.field).string.uuid = true];
   string environment_id = 3 [(buf.validate.field).string.uuid = true];
@@ -34,7 +34,7 @@ message RequestDeploymentMessage {
 }
 
 message DeploymentStatusMessage {
-  o5.messaging.v1.RequestMetadata metadata = 1;
+  o5.messaging.v1.RequestMetadata request = 1;
   string deployment_id = 2 [(buf.validate.field).string.uuid = true];
   DeploymentStatus status = 3;
   string message = 4;
