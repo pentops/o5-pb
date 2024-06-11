@@ -14,10 +14,15 @@ deps:
   - remote: buf.build
     owner: pentops
     repository: j5
-    commit: cb386351972643898745edecf43ecabf
-    digest: shake256:382ba8fa19d1b9ddd3568bf0bb95b236b5cb0835e3aeff718e77d3497e7503b77760c9c608cbf0d25168641e5f86678b4c5ac031d5d65a74cea7a4666bdce22a
+    commit: 380df6a8bac6442caa37cb24014ccc20
+    digest: shake256:7a3898d3c74868244b35d3cb4ea37e87264310c026617abe8d5dbf5e440feaf65d2984f722e1721d4f6352fcdfa30e351bb8718f6aea3d32cc3d818f9cdec799
   - remote: buf.build
     owner: pentops
     repository: listify
     commit: 88fbd382a3e34ecfb80f8e35c19126c3
     digest: shake256:832cd76e75747f5a073a97d50f6562fe2fd7e96f5fbd4950b5291d623da486409aabf2a09e06c1d26df1692f0301b40b880cbf800dd7ba7f794c764bd53aa15d
+  - remote: buf.build
+    owner: pentops
+    repository: messaging
+    commit: 675bd3c4763842e0bdef1047f7ab7225
+    digest: shake256:3dc7b4b1091d677d68123e32e134cb6506663166a411ca8a86d7e4d8ee8c85f705326ab507ed4b558f6a8cdb67f66fc78d90cf259b95aa8ace79b0e74820ab5c

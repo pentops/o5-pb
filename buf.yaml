@@ -6,6 +6,7 @@ deps:
   - buf.build/bufbuild/protovalidate
   - buf.build/pentops/listify
   - buf.build/pentops/j5
+  - buf.build/pentops/messaging
 
 lint:
   use:
