@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package o5.deployer.v1;
+
+option go_package = "github.com/pentops/o5-go/deployer/v1/deployer_pb";
+
+message DeploymentFlags {
+  // Skips scale up/down, directly applying the updates in one infra call.
+  bool quick_mode = 1;
+
+  // Rotates database credentials
+  bool rotate_credentials = 2;
+
+  bool cancel_updates = 3;
+  bool db_only = 4;
+  bool infra_only = 5;
+
+  bool import_resources = 6;
+}
