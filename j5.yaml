@@ -6,21 +6,15 @@ registry:
 packages:
   - label: Auth
     name: o5.auth.v1
-  - label: Dante
-    name: o5.dante.v1
-  - label: Deployer
-    name: o5.deployer.v1
+
 options:
   trimSubPackages:
     - service
     - topic
-  wrapOneof: true
-  shortEnums:
-    unspecifiedSuffix: UNSPECIFIED
-    strictUnmarshal: true
 
 git:
   main: refs/heads/main
+
 protoBuilds:
   - label: "o5-go"
     goProxy:
